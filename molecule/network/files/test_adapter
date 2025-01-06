@@ -1,0 +1,3 @@
+# allow-hotplug enp15s0f10
+# iface enp15s0f10 inet manual
+# test network adapter loaded from interfaces.d

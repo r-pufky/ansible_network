@@ -1,0 +1,16 @@
+---
+###############################################################################
+# Network Handlers
+###############################################################################
+
+- name: 'Handlers | ifreload'
+  ansible.builtin.command: '/usr/sbin/ifreload -a'
+  become: true
+  changed_when: false
+
+- name: 'Handlers | restart networking'
+  when: network_systemctl_network_restart
+  ansible.builtin.service:
+    name: 'networking'
+    state: 'restarted'
+  changed_when: true

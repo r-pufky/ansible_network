@@ -1,0 +1,23 @@
+---
+- name: 'VM network | prepare'
+  hosts: 'all'
+  gather_facts: false
+  become: true
+  tasks:
+    - name: 'VM network | prepare | get /etc/resolv.conf'
+      ansible.builtin.copy:
+        src: '/etc/resolv.conf'
+        remote_src: true
+        dest: '/etc/resolv.conf.ansible'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+
+    - name: 'Default | prepare | get /etc/network/interfaces'
+      ansible.builtin.copy:
+        src: '/etc/network/interfaces'
+        remote_src: true
+        dest: '/etc/network/interfaces.ansible'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'

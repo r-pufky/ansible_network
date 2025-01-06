@@ -1,0 +1,26 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# IPv6 for linux systems.
+###############################################################################
+# SLAAC will block boot for up to 5 minutes waiting for a non-existent
+# stateless DHCP v6 server.
+#
+# Uses sysctl (e.g. the kernel namespace must be available).
+#
+# Reference:
+# * https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=947234
+# * https://www.itzgeek.com/how-tos/linux/debian/how-to-disable-ipv6-on-debian-9-ubuntu-16-04.html
+# * https://www.linuxbabe.com/ubuntu/disable-ipv6-on-ubuntu
+# * https://forum.proxmox.com/threads/no-console-with-proxmox-5-0-beta-2-and-debian-9-containers.35313/
+
+- name: 'IPv6 | {% if network_ipv6_enable %}enable{% else %}disable{% endif %}'
+  notify: 'Handlers | restart networking'
+  ansible.posix.sysctl:
+    name: '{{ item.name }}'
+    value: '{{ item.value }}'
+    state: 'present'
+  loop:
+    - {name: 'net.ipv6.conf.all.disable_ipv6', value: '{{ not network_ipv6_enable | bool | int }}'}
+    - {name: 'net.ipv6.conf.default.disable_ipv6', value: '{{ not network_ipv6_enable | bool | int }}'}
+    - {name: 'net.ipv6.conf.lo.disable_ipv6', value: '{{ not network_ipv6_enable | bool | int }}'}

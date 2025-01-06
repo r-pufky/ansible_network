@@ -1,0 +1,34 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Configure global network interfaces.
+###############################################################################
+# WARNING: for Proxmox/LXC containers, the network configuration **must** be
+# set in the LXC container configuration. Changing from DHCP (set in PVE) to
+# static (set in the LXC container) will cause network connection failures.
+#
+# Setting both network definitions will prefer manual configuration.
+#
+# Network device definition using /etc/network/interfaces format.
+#
+# Proxmox must define all network interfaces here in order for the WebUI and
+# SDN to detect settings (trigger ifreload -a to force refresh in Proxmox 8).
+# Reboot instead of using debian_optimizations_systemctl_network_restart.
+#
+# Default: '' (un-managed).
+#
+# Reference:
+# * https://forum.proxmox.com/threads/how-to-edit-etc-network-interfaces-with-ansible-correctly.130972/
+
+- name: 'Network | interfaces | set'
+  when: network_interfaces | length > 0
+  notify:
+    - 'Handlers | ifreload'
+    - 'Handlers | restart networking'
+  ansible.builtin.template:
+    src: 'interfaces.j2'
+    dest: '/etc/network/interfaces'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'
+    force: true

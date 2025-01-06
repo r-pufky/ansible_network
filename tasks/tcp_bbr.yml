@@ -1,0 +1,35 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# Use TCP BBR network algorithm if able.
+###############################################################################
+# The Kernel will substitute ipv4.tcp_ for any undefined ipv6.tcp_* value.
+#
+# Uses sysctl (e.g. the kernel namespace must be available).
+#
+# Reference:
+# * https://cloud.google.com/blog/products/gcp/tcp-bbr-congestion-control-comes-to-gcp-your-internet-just-got-faster
+# * https://gist.github.com/sammdu/668070b486832f47f3b0da2200a7954f
+# * https://wiki.crowncloud.net/?How_to_enable_BBR_on_Debian_12
+
+- name: 'TCP BBR | enable'
+  when: network_tcp_bbr_enable
+  ansible.posix.sysctl:
+    name: '{{ item.name }}'
+    value: '{{ item.value }}'
+    state: 'present'
+    reload: true
+  loop:
+    - {name: 'net.core.default_qdisc', value: 'fq'}
+    - {name: 'net.ipv4.tcp_congestion_control', value: 'bbr'}
+
+- name: 'TCP BBR | disable'
+  when: not network_tcp_bbr_enable
+  ansible.posix.sysctl:
+    name: '{{ item.name }}'
+    value: '{{ item.value }}'
+    state: 'present'
+    reload: true
+  loop:
+    - {name: 'net.core.default_qdisc', value: 'fq_codel'}
+    - {name: 'net.ipv4.tcp_congestion_control', value: 'cubic'}

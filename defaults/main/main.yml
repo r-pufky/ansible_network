@@ -1,0 +1,106 @@
+---
+###############################################################################
+# Network Options
+###############################################################################
+# WARNING: for Proxmox/LXC containers, the network configuration **must** be
+# set in the LXC container configuration. Changing from DHCP (set in PVE) to
+# static (set in the LXC container) will cause network connection failures.
+
+# Enable TCP BBR network algorithm if able.
+#
+# Uses sysctl (e.g. the kernel namespace must be available).
+#
+# Default: True.
+#
+# Reference:
+# * https://github.com/google/bbr
+network_tcp_bbr_enable: true
+
+# Enable IPv6 support?
+#
+# SLAAC will block debian boots for up to 5 minutes waiting for a non-existent
+# stateless DHCP v6 server.
+#
+# Uses sysctl (e.g. the kernel namespace must be available).
+#
+# Default: False.
+#
+# Reference:
+# * https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=947234
+network_ipv6_enable: false
+
+# Use 'systemctl restart networking'?
+#
+# Role applies networking changes via 'ifreload -a' without restarting the
+# service. This will enable service restarting which may cause network
+# interruptions but potentially flush/fix major network changes.
+#
+# PVE should reboot instead of using this method.
+#
+# Default: False.
+network_systemctl_network_restart: false
+
+# Set /etc/resolv.conf.
+#
+# Set custom resolvers until other processes overwrite settings. Useful for
+# initial configurations. This file is dynamically updated on network changes
+# unless it is set immutable; see network_resolv_immutable.
+#
+# Default: '' (un-managed).
+#
+# Reference:
+# * https://wiki.debian.org/resolv.conf
+network_resolv: ''
+
+# Set /etc/resolv.conf immutable?
+#
+# Sets resolv.conf immutable to prevent any additional changes outside of role.
+#
+# Default: False.
+#
+# Reference:
+# * https://wiki.debian.org/resolv.conf
+network_resolv_immutable: false
+
+# Network device definition using /etc/network/interfaces format.
+#
+# Explicitly include 'source /etc/network/interfaces.d/*' if using both
+# network_local and network_interfaces.
+#
+# Proxmox must define all network interfaces here in order for the WebUI and
+# SDN to detect settings.
+#
+# Default: '' (un-managed).
+network_interfaces: ''
+
+###############################################################################
+# Network (Local Configuration)
+###############################################################################
+# Configure network per interface (interfaces.d).
+#
+# network_local:
+#     list of dict - network local configuration.
+#   - service: str - name of local interface/service config
+#           (/etc/network/interfaces.d/{NAME}).
+#     state: str - whether config should be managed or removed
+#         Values:
+#           present: manage configuration
+#            absent: remove configuration
+#         Default: 'present'.
+#     config: str - network interface config
+#
+# network_local:
+#   - service: 'lo'
+#     state: 'present'
+#     config: |
+#       auto lo
+#       iface lo inet loopback
+#       # The loopback network interface
+#   - service: 'eth10'
+#     state: 'absent'
+#
+# Default: [] (un-managed).
+#
+# Reference:
+# * https://manpages.debian.org/bookworm/ifupdown2/interfaces.5.en.html
+network_local: []

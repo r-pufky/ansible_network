@@ -1,0 +1,22 @@
+---
+###############################################################################
+# Network Packages
+###############################################################################
+
+# Network packages to install. Default: [].
+network_packages: []
+
+# Network packages to remove. Default: [].
+network_packages_absent: []
+
+# Network apt sources to add.
+#
+# Additional APT sources for network installation. Configure in main APT
+# management if using main debian repositories (DEB822 will overwrite existing
+# APT sources based on signing keys, potentially removing configured APT
+# sources).
+#
+# Uses r_pufky.srv.apt.apt_sources format.
+#
+# Default: [] (unmanaged).
+network_apt_sources: []

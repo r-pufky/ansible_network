@@ -1,0 +1,32 @@
+---
+- name: 'Install packages'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.apt'
+  vars:
+    apt_packages:
+      - '{{ network_role_packages }}'
+      - '{{ network_packages }}'
+    apt_packages_absent:
+      - '{{ network_packages_absent }}'
+    apt_sources: '{{ network_apt_sources }}'
+    apt_package_update_cache: true
+
+- name: 'TCP BBR'
+  ansible.builtin.import_tasks: 'tcp_bbr.yml'
+- name: 'IPv6'
+  ansible.builtin.import_tasks: 'ip_v6.yml'
+- name: 'Resolv'
+  ansible.builtin.import_tasks: 'resolv.yml'
+- name: 'Interfaces'
+  ansible.builtin.import_tasks: 'interfaces.yml'
+
+- name: 'Interfaces.d'
+  ansible.builtin.include_tasks: 'interfaces_d.yml'
+  when: network_local | length > 0
+  vars:
+    service: '{{ local.service }}'
+    state: '{{ local.state | default("present") }}'
+    config: '{{ local.config }}'
+  loop: '{{ network_local }}'
+  loop_control:
+    loop_var: local

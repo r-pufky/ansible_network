@@ -1,0 +1,34 @@
+---
+###############################################################################
+# Interfaces.d (Local Configuration)
+###############################################################################
+# Configure local interfaces options.
+#
+# Args:
+#   service: str - name of local config (/etc/network/interfaces.d/{NAME})
+#   state: str - whether config should be present or absent
+#   config: str - network interface config, see defaults.yml
+#
+# Reference:
+# * https://manpages.debian.org/bookworm/ifupdown2/interfaces.5.en.html
+
+- name: 'Interfaces.d | remove local config {{ service }}'
+  when: state | lower == 'absent'
+  notify:
+    - 'Handlers | ifreload'
+    - 'Handlers | restart networking'
+  ansible.builtin.file:
+    path: '/etc/network/interfaces.d/{{ service }}'
+    state: 'absent'
+
+- name: 'Interfaces.d | set local config {{ service }}'
+  when: state | lower == 'present'
+  notify:
+    - 'Handlers | ifreload'
+    - 'Handlers | restart networking'
+  ansible.builtin.template:
+    src: 'local.j2'
+    dest: '/etc/network/interfaces.d/{{ service }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0644'

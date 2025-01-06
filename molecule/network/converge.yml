@@ -1,0 +1,22 @@
+---
+- name: 'Network | converge'
+  hosts: 'all'
+  gather_facts: false
+  become: true
+  tasks:
+    - name: 'Network | converge | load /etc/resolv.conf.ansible'
+      ansible.builtin.slurp:
+        path: '/etc/resolv.conf.ansible'
+      register: _test_network_resolv
+
+    - name: 'Network | converge | load /etc/network/interfaces.pre_test.ansible'
+      ansible.builtin.slurp:
+        path: '/etc/network/interfaces.pre_test.ansible'
+      register: _test_network_interfaces
+
+    - name: 'Network | converge | run r_pufky.srv.network'
+      ansible.builtin.include_role:
+        name: 'r_pufky.srv.network'
+      vars:
+        network_resolv: '{{ _test_network_resolv.content | b64decode }}'
+        network_interfaces: '{{ _test_network_interfaces.content | b64decode }}'

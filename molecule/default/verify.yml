@@ -1,0 +1,56 @@
+---
+- name: 'Default | verify'
+  hosts: 'all'
+  gather_facts: false
+  become: true
+  tasks:
+    - name: 'Default | verify | query /etc/resolv.conf'
+      ansible.builtin.copy:
+        src: '/etc/resolv.conf.ansible'
+        remote_src: true
+        dest: '/etc/resolv.conf'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      check_mode: true
+      diff: true
+      register: _test_network_resolv
+
+    - name: 'Default | verify | assert expected /etc/resolv.conf'
+      ansible.builtin.assert:
+        that:
+          - not _test_network_resolv.changed
+        fail_msg: >
+          /etc/resolv.conf is not in expected format.
+
+    - name: 'Default | verify | query /etc/network/interfaces'
+      ansible.builtin.copy:
+        src: '/etc/network/interfaces.ansible'
+        remote_src: true
+        dest: '/etc/network/interfaces'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      check_mode: true
+      diff: true
+      register: _test_network_interfaces
+
+    - name: 'Default | verify | assert expected /etc/network/interfaces'
+      ansible.builtin.assert:
+        that:
+          - not _test_network_interfaces.changed
+        fail_msg: >
+          /etc/network/interfaces is not in expected format.
+
+    - name: 'Default | verify | get TCP BBR status'
+      ansible.builtin.command: 'sysctl --values net.ipv4.tcp_congestion_control'
+      register: _test_network_tcp_bbr
+      changed_when: false
+
+    - name: 'Default | verify | assert TCP BBR enabled'
+      ansible.builtin.assert:
+        that:
+          - _test_network_tcp_bbr.stdout == 'bbr'  # should be bbr
+        fail_msg: >
+          sysctl should report tcp_congestion_control not found
+          ({{ _test_network_tcp_bbr.stdout }}).
