@@ -64,14 +64,29 @@ network_resolv_immutable: false
 
 # Network device definition using /etc/network/interfaces format.
 #
-# Explicitly include 'source /etc/network/interfaces.d/*' if using both
-# network_local and network_interfaces.
-#
 # Proxmox must define all network interfaces here in order for the WebUI and
 # SDN to detect settings.
 #
+# Disable network_interfaces_source_enable, network_frr_interfaces_enable to
+# manually manage inclusion of interfaces.d and FRR service restarts.
+#
 # Default: '' (un-managed).
 network_interfaces: ''
+
+# Enable automatic inclusion of interfaces.d?
+#
+# network_local must be configured if enabled as ifreload and post-up will fail
+# if interfaces.d is empty.
+#
+# Default: False.
+network_interfaces_source_enable: false
+
+# Source interfaces.d before network_interfaces?
+#
+# interfaces.d will be sourced after network_interfaces if False.
+#
+# Default: False.
+network_interfaces_source_before: false
 
 ###############################################################################
 # Network (Local Configuration)

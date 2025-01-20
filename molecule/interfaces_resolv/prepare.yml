@@ -1,0 +1,30 @@
+---
+# yamllint disable rule:line-length
+- name: 'Interfaces resolve | prepare'
+  hosts: 'all'
+  gather_facts: false
+  become: true
+  tasks:
+    - name: 'Interfaces resolve | prepare | get /etc/resolv.conf'
+      ansible.builtin.slurp:
+        path: '/etc/resolv.conf'
+      register: _test_network_resolv_block
+
+    # ansible only provides block writing not reading (blockinfile).
+    - name: 'Interfaces resolve | prepare | get /etc/network/interfaces vagrant-block'  # noqa command-instead-of-module vagrant interface block dynamic
+      ansible.builtin.command: 'sed -n "/^#VAGRANT-BEGIN/,/^#VAGRANT-END/p" /etc/network/interfaces'
+      changed_when: false
+      register: _test_network_vagrant_block
+
+    - name: 'Interfaces resolve | prepare | cache vagrant node network configuration'
+      ansible.builtin.set_fact:
+        _test_network_vagrant: '{{ _test_network_vagrant_block.stdout }}'
+        _test_network_resolv: '{{ _test_network_resolv_block.content | b64decode }}'
+        cacheable: true
+
+    # ifreload only supports sources, not source-directory.
+    - name: 'Interfaces resolve | prepare | set sources instead of source-directory (ifreload support)'
+      ansible.builtin.lineinfile:
+        path: '/etc/network/interfaces'
+        regexp: '^source-directory(.*)$'
+        line: 'source /etc/network/interfaces.d/*'

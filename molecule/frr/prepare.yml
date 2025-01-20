@@ -1,0 +1,24 @@
+---
+# yamllint disable rule:line-length
+- name: 'FRR | prepare'
+  hosts: 'all'
+  gather_facts: false
+  become: true
+  tasks:
+    # ansible only provides block writing not reading (blockinfile).
+    - name: 'FRR | prepare | get /etc/network/interfaces vagrant-block'  # noqa command-instead-of-module vagrant interface block dynamic
+      ansible.builtin.command: 'sed -n "/^#VAGRANT-BEGIN/,/^#VAGRANT-END/p" /etc/network/interfaces'
+      changed_when: false
+      register: _test_network_vagrant_block
+
+    - name: 'FRR | prepare | cache vagrant node network configuration'
+      ansible.builtin.set_fact:
+        _test_network_vagrant: '{{ _test_network_vagrant_block.stdout }}'
+        cacheable: true
+
+    # ifreload only supports sources, not source-directory.
+    - name: 'FRR | prepare | set sources instead of source-directory (ifreload support)'
+      ansible.builtin.lineinfile:
+        path: '/etc/network/interfaces'
+        regexp: '^source-directory(.*)$'
+        line: 'source /etc/network/interfaces.d/*'

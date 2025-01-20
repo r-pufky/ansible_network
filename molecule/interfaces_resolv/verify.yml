@@ -1,0 +1,96 @@
+---
+# yamllint disable rule:line-length
+#
+# Args:
+#   _test_network_vagrant: str - vagrant network block
+#   _test_network_resolv: str - resolv.conf block
+- name: 'Interfaces resolve | verify'
+  hosts: 'all'
+  gather_facts: false
+  become: true
+  tasks:
+    - name: 'Interfaces resolve | verify | assert fact_caching not expired'
+      ansible.builtin.assert:
+        that:
+          - '_test_network_resolv is defined'
+          - '_test_network_vagrant is defined'
+        fail_msg: 'fact_caching has expired; re-run prepare.'
+
+    - name: 'Interfaces resolve | verify | query /etc/resolv.conf'
+      ansible.builtin.template:
+        src: 'template.j2'
+        dest: '/etc/resolv.conf'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      check_mode: true
+      diff: true
+      register: _test_network_resolv_conf
+      vars:
+        content: |
+          {{ _test_network_resolv }}
+          # vm_network custom resolv.conf modification test.
+
+    - name: 'Interfaces resolve | verify | interfaces | assert expected /etc/resolv.conf'
+      ansible.builtin.assert:
+        that:
+          - not _test_network_resolv_conf.changed
+        fail_msg: >
+          /etc/resolv.conf is not in expected format.
+
+    - name: 'Interfaces resolve | verify | query /etc/network/interfaces'
+      ansible.builtin.template:
+        src: 'template.j2'
+        dest: '/etc/network/interfaces'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      check_mode: true
+      diff: true
+      register: _test_network_interfaces
+      vars:
+        content: |
+          # This file describes the network interfaces available on your system
+          # and how to activate them. For more information, see interfaces(5).
+
+          {{ _test_network_vagrant }}
+          source /etc/network/interfaces.d/*
+
+    - name: 'Interfaces resolve | verify | interfaces | assert expected /etc/network/interfaces'
+      ansible.builtin.assert:
+        that:
+          - not _test_network_interfaces.changed
+        fail_msg: >
+          /etc/network/interfaces is not in expected format.
+
+    - name: 'Interfaces resolve | verify | interfaces | query /etc/network/interfaces.d/test_adapter'
+      ansible.builtin.copy:
+        src: 'test_adapter'
+        dest: '/etc/network/interfaces.d/test_adapter'
+        owner: 'root'
+        group: 'root'
+        mode: '0644'
+      check_mode: true
+      diff: true
+      register: _test_network_interfaces_d
+
+    - name: 'Interfaces resolve | verify | interfaces | assert expected /etc/network/interfaces.d/test_adapter'
+      ansible.builtin.assert:
+        that:
+          - not _test_network_interfaces_d.changed
+        fail_msg: >
+          /etc/network/interfaces.d/test_adapter is not in expected format:
+          {{ _test_network_interfaces_d.diff }}.
+
+    - name: 'Interfaces resolve | verify | interfaces | get IPv6 status'
+      ansible.builtin.command: 'sysctl --values net.ipv6.conf.all.disable_ipv6'
+      register: _test_network_ipv6
+      changed_when: false
+
+    - name: 'Interfaces resolve | verify | interfaces | assert IPv6 enabled'
+      ansible.builtin.assert:
+        that:
+          - _test_network_ipv6.stdout | int == 0
+        fail_msg: >
+          sysctl should report net.ipv6.conf.all.disable_ipv6=0
+          ({{ _test_network_ipv6.stdout }}).

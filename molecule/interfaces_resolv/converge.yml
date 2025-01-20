@@ -1,0 +1,24 @@
+---
+# Args:
+#   _test_network_vagrant: str - vagrant network block
+#   _test_network_resolv: str - resolv.conf block
+- name: 'Interfaces resolve | converge'
+  hosts: 'all'
+  gather_facts: false
+  become: true
+  tasks:
+    - name: 'Interfaces resolve | converge | assert fact_caching not expired'
+      ansible.builtin.assert:
+        that:
+          - '_test_network_resolv is defined'
+          - '_test_network_vagrant is defined'
+        fail_msg: 'fact_caching has expired; re-run prepare.'
+
+    - name: 'Interfaces resolve | converge | run r_pufky.srv.network'
+      ansible.builtin.include_role:
+        name: 'r_pufky.srv.network'
+      vars:
+        network_resolv: |
+          {{ _test_network_resolv }}
+          # vm_network custom resolv.conf modification test.
+        network_interfaces: '{{ _test_network_vagrant }}'

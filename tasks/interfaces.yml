@@ -20,6 +20,16 @@
 # Reference:
 # * https://forum.proxmox.com/threads/how-to-edit-etc-network-interfaces-with-ansible-correctly.130972/
 
+- name: 'Network | interfaces | assert interfaces defined for interfaces.d'
+  when: network_interfaces_source_enable
+  ansible.builtin.assert:
+    that:
+      - 'network_local | length > 0'
+    fail_msg: |
+      network_local must have defined interfaces if network_interfaces_source_enable.
+
+      Otherwise ifreload and post-up will fail.
+
 - name: 'Network | interfaces | set'
   when: network_interfaces | length > 0
   notify:

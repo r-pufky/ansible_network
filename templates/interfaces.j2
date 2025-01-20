@@ -1,4 +1,13 @@
 # This file describes the network interfaces available on your system
 # and how to activate them. For more information, see interfaces(5).
 
+{% if network_interfaces_source_before %}
+{{ 'source /etc/network/interfaces.d/*' if network_interfaces_source_enable else '' }}
+{% endif %}
 {{ network_interfaces }}
+{% if network_frr_enable and network_frr_interfaces_enable %}
+{{ 'sleep 5 && ' if network_frr_interfaces_stabilize else '' }}post-up /usr/bin/systemctl restart frr.service
+{% endif %}
+{% if not network_interfaces_source_before %}
+{{ 'source /etc/network/interfaces.d/*' if network_interfaces_source_enable else '' }}
+{% endif %}

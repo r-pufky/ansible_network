@@ -1,0 +1,322 @@
+---
+###############################################################################
+# FRRouting Options
+###############################################################################
+# High performance network routing stack; adds support for additional network
+# routing protocols such as Openfabric.
+#
+# Reference:
+# * https://docs.frrouting.org/en/latest
+# * https://frrouting.org/
+# * https://github.com/frrouting/frr
+
+# Enable FRR? Default: False.
+network_frr_enable: false
+
+# Enable automatic informed FRR service restarts in interfaces?
+#
+# Include FRR service restarts in interfaces. FRR (FRRouting) must be informed
+# of network hardware changes in interfaces:
+#
+#   post-up /usr/bin/systemctl restart frr.service
+#
+# Which is typically included before sourcing interfaces.d:
+#
+#   source /etc/network/interfaces.d/*
+#
+# Disable to manage FRR service restarts manually.
+#
+# Default: True.
+network_frr_interfaces_enable: true
+
+# Enable hardware stabilization during FRR service restarts?
+#
+# Some hardware may need to stabilize before FRR can properly restart. Inject a
+# 5 second delay before restarting FRR service to allow for hardware to
+# stabilize:
+#
+#   sleep 5 && post-up ...
+#
+# Default: False.
+network_frr_interfaces_stabilize: false
+
+# FRRouting configuration.
+#
+# All daemons are managed from this file (/etc/frr/frr.conf); see each
+# individual daemon for configuration options.
+#
+# Default: 'log syslog informational' (default).
+#
+# Reference:
+# * https://docs.frrouting.org/en/latest/protocols.html
+network_frr_config: 'log syslog informational'
+
+###############################################################################
+# Daemons (/etc/frr/daemons)
+###############################################################################
+# Daemons to start.
+#
+# Read through all FRR documentation to understand all configuration options.
+#
+# Reference:
+# * https://docs.frrouting.org/en/latest/setup.html
+
+# Enable VTYSH shell.
+#
+# Interactive shell providing a combined frontend to all FRR daemons
+#
+# Default: True.
+network_frr_daemon_vtysh_enable: true
+
+# Default configuration profile for all daemons.
+#
+# Special Case:
+#   traditional: defaults adhering mostly to IETF standards or common practices
+#                in wide-area internet routing.
+#    datacenter: a single administrative domain with intra-domain links using
+#                aggressive timers.
+#
+# Default: 'traditional'
+#
+# Reference:
+# * https://docs.frrouting.org/en/latest/basic.html#profiles
+network_frr_daemon_frr_profile: 'traditional'
+
+# Maximum number of file descriptors to use.
+#
+# A large number of peers may require more (e.g. in BGP).
+#
+# Default: 1024
+#
+# Reference:
+# * https://docs.frrouting.org/en/latest/basic.html#cmdoption-limit-fds
+network_frr_daemon_max_fds: 1024
+
+# list of str options to pass to all daemons. Default: [].
+network_frr_daemon_frr_global_options: []
+
+# list of str options to pass to watchfrr before daemon list.
+#
+# To make watchfrr create or join the specified netns, add the '--netns'
+# option here. It will only have an effect in /etc/frr/<somename>/daemons, and
+# you need to start FRR with '/usr/lib/frr/frrinit.sh start <somename>'.
+#
+# network_frr_daemon_watchfrr_options:
+#   - '--netns'
+#
+# Default: [].
+network_frr_daemon_watchfrr_options: []
+
+# list of str Zebra daemon options. Default: ['-A 127.0.0.1', '-s 90000000'].
+network_frr_daemon_zebra_options: ['-A 127.0.0.1', '-s 90000000']
+
+# list of str Static daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_staticd_options: ['-A 127.0.0.1']
+
+# Wrap all daemons with specified command.
+#
+# Useful for programs which record processes but lack daemonization options,
+# such as perf and rr:
+#
+#   /usr/bin/daemonize /usr/bin/mywrapper
+#
+# Default: '' (no wrap).
+network_frr_daemon_all_wrap: ''
+
+# BGP (Border Gateway Protocol).
+###############################################################################
+# Enable BGP daemon? Default: False.
+network_frr_daemon_bgpd_enable: false
+
+# list of str BGP daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_bgpd_options: ['-A 127.0.0.1']
+
+# Wrap BGP daemon with specified commands. Default: ''.
+network_frr_daemon_bgpd_wrap: ''
+
+# OSPF (Open Shortest Path First).
+###############################################################################
+# Enable OSPF daemon? Default: False.
+network_frr_daemon_ospfd_enable: false
+
+# list of str OSPF daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_ospfd_options: ['-A 127.0.0.1']
+
+# Wrap OSPF daemon with specified commands. Default: ''.
+network_frr_daemon_ospfd_wrap: ''
+
+# OSPF6 (Open Shortest Path First v3 (IPv6)).
+###############################################################################
+# Enable OSPF6 daemon? Default: False.
+network_frr_daemon_ospf6d_enable: false
+
+# list of str OSPF6 daemon options. Default: ['-A ::1'].
+network_frr_daemon_ospf6d_options: ['-A ::1']
+
+# Wrap OSPF6 daemon with specified commands. Default: ''.
+network_frr_daemon_ospf6d_wrap: ''
+
+# RIP (Routing Information Protocol).
+###############################################################################
+# Enable RIP daemon? Default: False.
+network_frr_daemon_ripd_enable: false
+
+# list of str RIP daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_ripd_options: ['-A 127.0.0.1']
+
+# Wrap RIP daemon with specified commands. Default: ''.
+network_frr_daemon_ripd_wrap: ''
+
+# RIPng (Routing Information Protocol Next Generation).
+###############################################################################
+# Enable RIPng daemon? Default: False.
+network_frr_daemon_ripngd_enable: false
+
+# list of str RIPng daemon options. Default: ['-A ::1'].
+network_frr_daemon_ripngd_options: ['-A ::1']
+
+# Wrap RIPng daemon with specified commands. Default: ''.
+network_frr_daemon_ripngd_wrap: ''
+
+# ISIS (Intermediate System to Intermediate System).
+###############################################################################
+# Enable ISIS daemon? Default: False.
+network_frr_daemon_isisd_enable: false
+
+# list of str ISIS daemon options. Default: ['-A ::1'].
+network_frr_daemon_isisd_options: ['-A ::1']
+
+# Wrap ISIS daemon with specified commands. Default: ''.
+network_frr_daemon_isisd_wrap: ''
+
+# PIM (Protocol Independent Multicast).
+###############################################################################
+# Enable PIM daemon? Default: False.
+network_frr_daemon_pimd_enable: false
+
+# list of str PIM daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_pimd_options: ['-A 127.0.0.1']
+
+# Wrap PIM daemon with specified commands. Default: ''.
+network_frr_daemon_pimd_wrap: ''
+
+# PIM6 (Protocol Independent Multicast for IPv6).
+###############################################################################
+# Enable PIM6 daemon? Default: False.
+network_frr_daemon_pim6d_enable: false
+
+# list of str PIM6 daemon options. Default: ['-A ::1'].
+network_frr_daemon_pim6d_options: ['-A ::1']
+
+# Wrap PIM6 daemon with specified commands. Default: ''.
+network_frr_daemon_pim6d_wrap: ''
+
+# LDP (Label Distribution Protocol).
+###############################################################################
+# Enable LDP daemon? Default: False.
+network_frr_daemon_ldpd_enable: false
+
+# list of str LDP daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_ldpd_options: ['-A 127.0.0.1']
+
+# Wrap LDP daemon with specified commands. Default: ''.
+network_frr_daemon_ldpd_wrap: ''
+
+# NHRP (Next Hop Resolution Protocol).
+###############################################################################
+# Enable NHRP daemon? Default: False.
+network_frr_daemon_nhrpd_enable: false
+
+# list of str NHRP daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_nhrpd_options: ['-A 127.0.0.1']
+
+# Wrap NHRP daemon with specified commands. Default: ''.
+network_frr_daemon_nhrpd_wrap: ''
+
+# EIGRP (Enhanced Interior Gateway Routing Protocol).
+###############################################################################
+# Enable EIGRP daemon? Default: False.
+network_frr_daemon_eigrpd_enable: false
+
+# list of str EIGRP daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_eigrpd_options: ['-A 127.0.0.1']
+
+# Wrap EIGRP daemon with specified commands. Default: ''.
+network_frr_daemon_eigrpd_wrap: ''
+
+# Babel (Babel Routing Protocol).
+###############################################################################
+# Enable Babel daemon? Default: False.
+network_frr_daemon_babeld_enable: false
+
+# list of str Babel daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_babeld_options: ['-A 127.0.0.1']
+
+# Wrap Babel daemon with specified commands. Default: ''.
+network_frr_daemon_babeld_wrap: ''
+
+# SHARP (Scalable Hierarchical Aggregation & Reduction Protocol).
+###############################################################################
+# Enable SHARP daemon? Default: False.
+network_frr_daemon_sharpd_enable: false
+
+# list of str SHARP daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_sharpd_options: ['-A 127.0.0.1']
+
+# Wrap SHARP daemon with specified commands. Default: ''.
+network_frr_daemon_sharpd_wrap: ''
+
+# PBR (Policy Based Routing).
+###############################################################################
+# Enable PBR daemon? Default: False.
+network_frr_daemon_pbrd_enable: false
+
+# list of str PBR daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_pbrd_options: ['-A 127.0.0.1']
+
+# Wrap PBR daemon with specified commands. Default: ''.
+network_frr_daemon_pbrd_wrap: ''
+
+# BFD (Bidirectional Forwarding Detection).
+###############################################################################
+# Enable BFD daemon? Default: False.
+network_frr_daemon_bfdd_enable: false
+
+# list of str BFD daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_bfdd_options: ['-A 127.0.0.1']
+
+# Wrap BFD daemon with specified commands. Default: ''.
+network_frr_daemon_bfdd_wrap: ''
+
+# Fabric (OpenFabric).
+###############################################################################
+# Enable Fabric daemon? Default: False.
+network_frr_daemon_fabricd_enable: false
+
+# list of str Fabric daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_fabricd_options: ['-A 127.0.0.1']
+
+# Wrap Fabric daemon with specified commands. Default: ''.
+network_frr_daemon_fabricd_wrap: ''
+
+# VRRP (Virtual Router Redundancy Protocol).
+###############################################################################
+# Enable VRRP daemon? Default: False.
+network_frr_daemon_vrrpd_enable: false
+
+# list of str VRRP daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_vrrpd_options: ['-A 127.0.0.1']
+
+# Wrap VRRP daemon with specified commands. Default: ''.
+network_frr_daemon_vrrpd_wrap: ''
+
+# PATH (Install and Delete Segment Routing).
+###############################################################################
+# Enable PATH daemon? Default: False.
+network_frr_daemon_pathd_enable: false
+
+# list of str PATH daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_pathd_options: ['-A 127.0.0.1']
+
+# Wrap PATH daemon with specified commands. Default: ''.
+network_frr_daemon_pathd_wrap: ''

@@ -10,3 +10,7 @@ network_role_validate_release: 'bookworm'
 # Default debian packages required for operation.
 network_role_packages:
   - 'ifupdown2'  # https://packages.debian.org/bookworm/ifupdown2 (ifreload)
+
+# FRRouting packages.
+network_role_frr_packages:
+  - 'frr'

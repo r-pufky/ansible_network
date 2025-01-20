@@ -1,12 +1,8 @@
 ---
 # Network level testing requires VMs for kernel namespace and systemd
-# networking without affecting host. Test /etc/network configurations are
-# applied correctly with IPv6 enabled.
-#
-# As network information may be dynamic per the VM instance when it is spun up,
-# copy the current network configuration and inject known settings to validate
-# that the files were written correctly.
-
+# networking without affecting host:
+# * /etc/network/interfaces with defaults applied correctly with IPv6 enabled
+# * /etc/resolv.conf written correctly
 dependency:
   name: 'galaxy'
 driver:
@@ -24,10 +20,14 @@ provisioner:
     defaults:
       interpreter_python: 'auto_silent'
       callback_whitelist: 'profile_tasks, timer, yaml'
+      fact_caching: 'jsonfile'  # cache vagrant VM network configuration
+      fact_caching_connection: '/tmp/facts_cache'
+      fact_caching_timeout: 7200
   inventory:
     group_vars:
       all:
         network_ipv6_enable: true
+        network_interfaces_source_enable: true
         network_local:
           - service: 'test_adapter'
             state: 'present'
@@ -36,7 +36,7 @@ provisioner:
               # iface enp15s0f10 inet manual
               # test network adapter loaded from interfaces.d
 platforms:
-  - name: 'network-debian-12-vm-network'
+  - name: 'network-debian-12-vm-interfaces-resolv'
     box: 'debian/bookworm64'
     memory: 4096
     cpus: 2
@@ -59,7 +59,7 @@ scenario:
     - 'create'
     - 'prepare'
     - 'converge'
-    # - 'idempotence'  # setting immutable can only be done once.
+    # - 'idempotence'  # /etc/resolv.conf set immutable
     # - 'side_effect'
     - 'verify'
     # - 'cleanup'

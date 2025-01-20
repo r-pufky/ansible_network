@@ -30,7 +30,7 @@ network_resolv: |
   nameserver 192.168.1.1
   # custom /etc/resolv.conf for host
 network_resolv_immutable: true
-network_interfaces: 'source /etc/network/interfaces.d/*'
+network_interfaces_source_enable: true
 network_local:
   - service: 'lo'
     state: 'present'
@@ -52,6 +52,44 @@ Apply the base role
 - name: 'Apply base configuration'
   ansible.builtin.include_role:
     name: 'r_pufky.srv.network'
+```
+
+## FRRouting is supported as well.
+FRR can be configured with interfaces simultaneously.
+
+``` yaml
+- name: 'Add openfabric routing support'
+  ansible.builtin.include_role:
+    name: 'r_pufky.srv.network'
+  vars:
+    network_frr_enable: true
+    network_frr_interfaces_enable: true
+    network_frr_daemon_fabricd_enable: true
+    network_frr_config: |
+      frr defaults traditional
+      hostname test_frr_host
+      log syslog warning
+      ip forwarding
+      no ipv6 forwarding
+      service integrated-vtysh-config
+      !
+      interface lo
+       ip address 10.11.11.11/32
+       ip router openfabric 1
+       openfabric passive
+      interface eth0
+       ip router openfabric 1
+       openfabric csnp-interval 2
+       openfabric hello-interval 1
+       openfabric hello-multiplier 2
+      !
+      line vty
+      !
+      router openfabric 1
+       net 49.0011.0010.1111.0011.00
+       lsp-gen-interval 1
+       max-lsp-lifetime 600
+       lsp-refresh-interval 180
 ```
 
 ## Development
