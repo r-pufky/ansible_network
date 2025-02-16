@@ -93,6 +93,12 @@ network_interfaces_source_before: false
 ###############################################################################
 # Configure network per interface (interfaces.d).
 #
+# Many advanced configurations expect to locate network configuration only in
+# network_interfaces. Generally this is expressed as the interface existing
+# (ls /sys/class/net, lshw -C network) but failing to come up or erroring as
+# 'not existing'. If using interfaces.d and there is wonky behavior, first try
+# moving the config to network_interfaces to resolve the issue.
+#
 # network_local:
 #     list of dict - network local configuration.
 #   - service: str - name of local interface/service config
