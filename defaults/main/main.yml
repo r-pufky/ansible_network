@@ -6,6 +6,18 @@
 # set in the LXC container configuration. Changing from DHCP (set in PVE) to
 # static (set in the LXC container) will cause network connection failures.
 
+# Is this role applied to a container?
+#
+# Decision: manual user setting - There is currently no good way to
+#     deterministically and consistently detect if a remote host is a
+#     container outside of common cases.
+#
+# Hosts marked as containers will automatically disable any sysctl changes:
+#   * network_tcp_bbr_enable
+#   * network_ipv6_enable
+#
+network_container_enable: false
+
 # Enable TCP BBR network algorithm if able.
 #
 # Uses sysctl (e.g. the kernel namespace must be available).

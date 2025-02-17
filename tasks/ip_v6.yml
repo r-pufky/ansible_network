@@ -15,6 +15,7 @@
 # * https://forum.proxmox.com/threads/no-console-with-proxmox-5-0-beta-2-and-debian-9-containers.35313/
 
 - name: 'IPv6 | {% if network_ipv6_enable %}enable{% else %}disable{% endif %}'
+  when: not network_container_enable
   notify: 'Handlers | restart networking'
   ansible.posix.sysctl:
     name: '{{ item.name }}'

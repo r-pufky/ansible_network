@@ -13,7 +13,7 @@
 # * https://wiki.crowncloud.net/?How_to_enable_BBR_on_Debian_12
 
 - name: 'TCP BBR | enable'
-  when: network_tcp_bbr_enable
+  when: network_tcp_bbr_enable and not network_container_enable
   ansible.posix.sysctl:
     name: '{{ item.name }}'
     value: '{{ item.value }}'
@@ -24,7 +24,7 @@
     - {name: 'net.ipv4.tcp_congestion_control', value: 'bbr'}
 
 - name: 'TCP BBR | disable'
-  when: not network_tcp_bbr_enable
+  when: not network_tcp_bbr_enable and not network_container_enable
   ansible.posix.sysctl:
     name: '{{ item.name }}'
     value: '{{ item.value }}'
