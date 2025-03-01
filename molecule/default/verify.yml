@@ -1,4 +1,5 @@
 ---
+# yamllint disable rule:line-length
 - name: 'Default | verify'
   hosts: 'all'
   gather_facts: false
@@ -52,5 +53,70 @@
         that:
           - _test_network_tcp_bbr.stdout == 'bbr'  # should be bbr
         fail_msg: >
-          sysctl should report tcp_congestion_control not found
+          sysctl should report net.ipv4.tcp_congestion_control
           ({{ _test_network_tcp_bbr.stdout }}).
+
+    - name: 'Default | verify | get IPv4 forwarding status'
+      ansible.builtin.command: 'sysctl --values net.ipv4.ip_forward'
+      register: _test_network_tcp_ipv4_forwarding
+      changed_when: false
+
+    - name: 'Default | verify | assert IPv4 forwarding disabled'
+      ansible.builtin.assert:
+        that:
+          - _test_network_tcp_ipv4_forwarding.stdout == '0'
+        fail_msg: >
+          sysctl should report net.ipv4.ip_forward
+          ({{ _test_network_tcp_ipv4_forwarding.stdout }}).
+
+    - name: 'Default | verify | get IPv6 forwarding status'
+      ansible.builtin.command: 'sysctl --values net.ipv6.conf.all.forwarding'
+      register: _test_network_tcp_ipv6_forwarding
+      changed_when: false
+
+    - name: 'Default | verify | assert IPv6 forwarding disabled'
+      ansible.builtin.assert:
+        that:
+          - _test_network_tcp_ipv6_forwarding.stdout == '0'
+        fail_msg: >
+          sysctl should report net.ipv6.conf.all.forwarding
+          ({{ _test_network_tcp_ipv6_forwarding.stdout }}).
+
+    - name: 'Default | verify | get IPv6 disable status'
+      ansible.builtin.command: 'sysctl --values net.ipv6.conf.all.disable_ipv6'
+      register: _test_network_tcp_ipv6_disable
+      changed_when: false
+
+    - name: 'Default | verify | assert IPv6 disabled'
+      ansible.builtin.assert:
+        that:
+          - _test_network_tcp_ipv6_disable.stdout == '1'
+        fail_msg: >
+          sysctl should report net.ipv6.conf.all.disable_ipv6
+          ({{ _test_network_tcp_ipv6_disable.stdout }}).
+
+    - name: 'Default | verify | get IPv6 default disable status'
+      ansible.builtin.command: 'sysctl --values net.ipv6.conf.default.disable_ipv6'
+      register: _test_network_tcp_ipv6_default_disable
+      changed_when: false
+
+    - name: 'Default | verify | assert IPv6 default disabled'
+      ansible.builtin.assert:
+        that:
+          - _test_network_tcp_ipv6_default_disable.stdout == '1'
+        fail_msg: >
+          sysctl should report net.ipv6.conf.default.disable_ipv6
+          ({{ _test_network_tcp_ipv6_default_disable.stdout }}).
+
+    - name: 'Default | verify | get IPv6 lo disable status'
+      ansible.builtin.command: 'sysctl --values net.ipv6.conf.lo.disable_ipv6'
+      register: _test_network_tcp_ipv6_lo_disable
+      changed_when: false
+
+    - name: 'Default | verify | assert IPv6 lo disabled'
+      ansible.builtin.assert:
+        that:
+          - _test_network_tcp_ipv6_lo_disable.stdout == '1'
+        fail_msg: >
+          sysctl should report net.ipv6.conf.lo.disable_ipv6
+          ({{ _test_network_tcp_ipv6_lo_disable.stdout }}).

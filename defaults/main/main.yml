@@ -16,6 +16,10 @@
 #   * network_tcp_bbr_enable
 #   * network_ipv6_enable
 #
+# Special Case:
+#   * srv_container_enable=true forces network_container_enable=true.
+#
+# Default: False.
 network_container_enable: false
 
 # Enable TCP BBR network algorithm if able.
@@ -27,6 +31,13 @@ network_container_enable: false
 # Reference:
 # * https://github.com/google/bbr
 network_tcp_bbr_enable: true
+
+# Enable IPv4 Forwarding?
+#
+# Global IPv4 forwarding between all interfaces.
+#
+# Default: False.
+network_ipv4_forwarding_enable: false
 
 # Enable IPv6 support?
 #
@@ -40,6 +51,13 @@ network_tcp_bbr_enable: true
 # Reference:
 # * https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=947234
 network_ipv6_enable: false
+
+# Enable IPv6 Forwarding?
+#
+# Global IPv6 forwarding between all interfaces.
+#
+# Default: False.
+network_ipv6_forwarding_enable: false
 
 # Use 'systemctl restart networking'?
 #

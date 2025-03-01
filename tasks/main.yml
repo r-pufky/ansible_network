@@ -1,4 +1,9 @@
 ---
+- name: 'Force network_container_enable=true (srv_container_enable)'
+  when: srv_container_enable | default(false)
+  ansible.builtin.set_fact:
+    network_container_enable: true
+
 - name: 'Install packages'
   ansible.builtin.include_role:
     name: 'r_pufky.srv.apt'
@@ -14,6 +19,8 @@
 
 - name: 'TCP BBR'
   ansible.builtin.import_tasks: 'tcp_bbr.yml'
+- name: 'IPv4'
+  ansible.builtin.import_tasks: 'ip_v4.yml'
 - name: 'IPv6'
   ansible.builtin.import_tasks: 'ip_v6.yml'
 - name: 'Resolv'

@@ -1,0 +1,18 @@
+---
+# yamllint disable rule:line-length
+###############################################################################
+# IPv4 for linux systems.
+###############################################################################
+# Uses sysctl (e.g. the kernel namespace must be available).
+#
+# Reference:
+# * https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
+
+- name: 'IPv4 | IP forwarding {% if network_ipv4_forwarding_enable %}enable{% else %}disable{% endif %}'
+  when: not network_container_enable
+  notify: 'Handlers | restart networking'
+  ansible.posix.sysctl:
+    name: 'net.ipv4.ip_forward'
+    value: '{{ network_ipv4_forwarding_enable | int }}'
+    state: 'present'
+    reload: true
