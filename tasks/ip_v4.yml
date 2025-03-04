@@ -5,14 +5,21 @@
 ###############################################################################
 # Uses sysctl (e.g. the kernel namespace must be available).
 #
+# net.ipv4.ip_forward is an old kernel option and is aliased to
+# net.ipv4.conf.all.forwarding.
+#
 # Reference:
 # * https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
+# * https://medium.com/@voidp_46686/ip-forwarding-in-linux-6a9f7921d73d
 
 - name: 'IPv4 | IP forwarding {% if network_ipv4_forwarding_enable %}enable{% else %}disable{% endif %}'
   when: not network_container_enable
   notify: 'Handlers | restart networking'
   ansible.posix.sysctl:
-    name: 'net.ipv4.ip_forward'
-    value: '{{ network_ipv4_forwarding_enable | int }}'
+    name: '{{ item.name }}'
+    value: '{{ item.value }}'
     state: 'present'
     reload: true
+  loop:
+    - {name: 'net.ipv4.conf.all.forwarding', value: '{{ network_ipv4_forwarding_enable | bool | int }}'}
+    - {name: 'net.ipv4.conf.default.forwarding', value: '{{ network_ipv4_forwarding_enable | bool | int }}'}

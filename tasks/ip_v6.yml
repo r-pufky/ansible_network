@@ -14,6 +14,7 @@
 # * https://www.linuxbabe.com/ubuntu/disable-ipv6-on-ubuntu
 # * https://forum.proxmox.com/threads/no-console-with-proxmox-5-0-beta-2-and-debian-9-containers.35313/
 # * https://www.kernel.org/doc/Documentation/networking/ip-sysctl.txt
+# * https://medium.com/@voidp_46686/ip-forwarding-in-linux-6a9f7921d73d
 
 - name: 'IPv6 | {% if network_ipv6_enable %}enable{% else %}disable{% endif %}'
   when: not network_container_enable
@@ -24,15 +25,18 @@
     state: 'present'
     reload: true
   loop:
+    - {name: 'net.ipv6.conf.lo.disable_ipv6', value: '{{ not network_ipv6_enable | bool | int }}'}
     - {name: 'net.ipv6.conf.all.disable_ipv6', value: '{{ not network_ipv6_enable | bool | int }}'}
     - {name: 'net.ipv6.conf.default.disable_ipv6', value: '{{ not network_ipv6_enable | bool | int }}'}
-    - {name: 'net.ipv6.conf.lo.disable_ipv6', value: '{{ not network_ipv6_enable | bool | int }}'}
 
 - name: 'IPv6 | IP forwarding {% if network_ipv6_forwarding_enable %}enable{% else %}disable{% endif %}'
   when: not network_container_enable
   notify: 'Handlers | restart networking'
   ansible.posix.sysctl:
-    name: 'net.ipv6.conf.all.forwarding'
-    value: '{{ network_ipv6_forwarding_enable | int }}'
+    name: '{{ item.name }}'
+    value: '{{ item.value }}'
     state: 'present'
     reload: true
+  loop:
+    - {name: 'net.ipv6.conf.all.forwarding', value: '{{ network_ipv6_forwarding_enable | bool | int }}'}
+    - {name: 'net.ipv6.conf.default.forwarding', value: '{{ network_ipv6_forwarding_enable | bool | int }}'}
