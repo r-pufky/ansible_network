@@ -23,6 +23,7 @@
 - name: 'Network | interfaces | assert interfaces defined for interfaces.d'
   when: network_interfaces_source_enable
   ansible.builtin.assert:
+    quiet: true
     that:
       - 'network_local | length > 0'
     fail_msg: |
