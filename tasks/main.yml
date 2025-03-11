@@ -43,3 +43,4 @@
   loop: '{{ network_local }}'
   loop_control:
     loop_var: local
+    label: '{{ local.service }}'
