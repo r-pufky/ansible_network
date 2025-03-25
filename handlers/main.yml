@@ -4,11 +4,15 @@
 ###############################################################################
 
 - name: 'Handlers | ifreload'
+  listen:
+    - 'Handlers | reload restart networking'
+    - 'Handlers | reload restart FRR'
   ansible.builtin.command: '/usr/sbin/ifreload -a'
   become: true
   changed_when: false
 
 - name: 'Handlers | restart networking'
+  listen: 'Handlers | reload restart networking'
   when: network_systemctl_network_restart
   ansible.builtin.service:
     name: 'networking'
@@ -16,6 +20,7 @@
   changed_when: true
 
 - name: 'Handlers | restart FRR'
+  listen: 'Handlers | reload restart frr'
   ansible.builtin.service:
     name: 'frr'
     state: 'restarted'

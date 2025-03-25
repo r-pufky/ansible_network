@@ -20,9 +20,7 @@
       changed_when: '"i" not in _network_resolv_attr.diff.before.attributes'
 
     - name: 'Resolv | set /etc/resolv.conf'
-      notify:
-        - 'Handlers | ifreload'
-        - 'Handlers | restart networking'
+      notify: 'Handlers | reload restart networking'
       ansible.builtin.template:
         src: 'resolv.conf.j2'
         dest: '/etc/resolv.conf'

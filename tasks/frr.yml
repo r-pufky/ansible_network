@@ -3,16 +3,13 @@
 ###############################################################################
 # FRRouting Configuration.
 ###############################################################################
-#
 # Reference:
 # * https://pve.proxmox.com/wiki/Full_Mesh_Network_for_Ceph_Server
 # * https://www.juniper.net/documentation/us/en/software/junos/is-is/topics/concept/is-is-routing-overview.html#routing-is-is-overview__id-11020505
 # * https://gist.github.com/scyto/4c664734535da122f4ab2951b22b2085
 
 - name: 'Network | FRR | set /etc/frr/daemons'
-  notify:
-    - 'Handlers | ifreload'
-    - 'Handlers | restart FRR'
+  notify: 'Handlers | reload restart FRR'
   ansible.builtin.template:
     src: 'frr/daemons.j2'
     dest: '/etc/frr/daemons'
@@ -22,9 +19,7 @@
     force: true
 
 - name: 'Network | FRR | set /etc/frr/frr.conf'
-  notify:
-    - 'Handlers | ifreload'
-    - 'Handlers | restart FRR'
+  notify: 'Handlers | reload restart FRR'
   ansible.builtin.template:
     src: 'frr/frr.conf.j2'
     dest: '/etc/frr/frr.conf'

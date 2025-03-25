@@ -14,18 +14,14 @@
 
 - name: 'Interfaces.d | remove local config {{ service }}'
   when: state | lower == 'absent'
-  notify:
-    - 'Handlers | ifreload'
-    - 'Handlers | restart networking'
+  notify: 'Handlers | reload restart networking'
   ansible.builtin.file:
     path: '/etc/network/interfaces.d/{{ service }}'
     state: 'absent'
 
 - name: 'Interfaces.d | set local config {{ service }}'
   when: state | lower == 'present'
-  notify:
-    - 'Handlers | ifreload'
-    - 'Handlers | restart networking'
+  notify: 'Handlers | reload restart networking'
   ansible.builtin.template:
     src: 'local.j2'
     dest: '/etc/network/interfaces.d/{{ service }}'

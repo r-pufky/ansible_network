@@ -33,9 +33,7 @@
 
 - name: 'Network | interfaces | set'
   when: network_interfaces | length > 0
-  notify:
-    - 'Handlers | ifreload'
-    - 'Handlers | restart networking'
+  notify: 'Handlers | reload restart networking'
   ansible.builtin.template:
     src: 'interfaces.j2'
     dest: '/etc/network/interfaces'
