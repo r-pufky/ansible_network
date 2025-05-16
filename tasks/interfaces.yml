@@ -13,12 +13,13 @@
 #
 # Proxmox must define all network interfaces here in order for the WebUI and
 # SDN to detect settings (trigger ifreload -a to force refresh in Proxmox 8).
-# Reboot instead of using debian_optimizations_systemctl_network_restart.
+# Reboot instead of using os_optimizations_systemctl_network_restart.
 #
 # Default: '' (un-managed).
 #
 # Reference:
 # * https://forum.proxmox.com/threads/how-to-edit-etc-network-interfaces-with-ansible-correctly.130972/
+# yamllint enable rule:line-length
 
 - name: 'Network | interfaces | assert interfaces defined for interfaces.d'
   when: network_interfaces_source_enable
@@ -27,7 +28,8 @@
     that:
       - 'network_local | length > 0'
     fail_msg: |
-      network_local must have defined interfaces if network_interfaces_source_enable.
+      ✘ network_local must have defined interfaces if
+      network_interfaces_source_enable.
 
       Otherwise ifreload and post-up will fail.
 

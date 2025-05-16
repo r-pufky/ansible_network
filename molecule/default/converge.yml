@@ -4,6 +4,6 @@
   gather_facts: false
   become: true
   tasks:
-    - name: 'Default | converge | apply r_pufky.srv.network'
+    - name: 'Default | converge | apply r_pufky.deb.network'
       ansible.builtin.include_role:
-        name: 'r_pufky.srv.network'
+        name: 'r_pufky.deb.network'

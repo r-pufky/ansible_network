@@ -1,8 +1,14 @@
 ---
+###############################################################################
+# FRR
+###############################################################################
 # Network level testing requires VMs for kernel namespace and systemd
-# networking without affecting host:
-# * /etc/network/interfaces FRR service restart before/after sources
-# * FRR is enabled, active with fabricd running
+# networking without affecting host. Test base role applies correctly.
+#
+# Tests:
+# * /etc/network/interfaces FRR service restart before/after sources.
+# * FRR is enabled, active with fabricd running.
+
 dependency:
   name: 'galaxy'
 driver:

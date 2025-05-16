@@ -16,7 +16,7 @@ network_packages_absent: []
 # APT sources based on signing keys, potentially removing configured APT
 # sources).
 #
-# Uses r_pufky.srv.apt.apt_sources format.
+# Uses r_pufky.deb.apt.apt_sources format.
 #
 # Default: [] (unmanaged).
 network_apt_sources: []

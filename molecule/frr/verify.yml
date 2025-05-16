@@ -1,9 +1,13 @@
 ---
-# yamllint disable rule:line-length
+###############################################################################
+# Verify
+###############################################################################
+# Verify FRR configuration is correct using cached dynamic vagrant blocks.
 #
 # Args:
-#   _test_network_vagrant: str - vagrant network block
-#   _test_network_resolv: str - resolv.conf block
+#   _test_network_vagrant: str - vagrant network block.
+#   _test_network_resolv: str - resolv.conf block.
+
 - name: 'FRR | verify'
   hosts: 'all'
   gather_facts: false
@@ -11,9 +15,10 @@
   tasks:
     - name: 'FRR | verify | assert fact_caching not expired'
       ansible.builtin.assert:
+        quiet: true
         that:
           - '_test_network_vagrant is defined'
-        fail_msg: 'fact_caching has expired; re-run prepare.'
+        fail_msg: '✘ fact_caching has expired; re-run prepare.'
 
     - name: 'FRR | verify | FRR | gather frr.service status'
       ansible.builtin.command: 'systemctl status frr.service'
@@ -22,10 +27,11 @@
 
     - name: 'FRR | verify | FRR | assert frr.service active'
       ansible.builtin.assert:
+        quiet: true
         that:
           - _test_network_frr.rc == 0
           - '"Active: active" in _test_network_frr.stdout'
-        fail_msg: 'frr.service should be enabled and active.'
+        fail_msg: '✘ frr.service should be enabled and active.'
 
 - name: 'FRR | verify | enable interface management disabled'
   hosts: 'network-debian-12-vm-frr-disable-management'
@@ -49,11 +55,13 @@
 
           {{ _test_network_vagrant }}
 
-    - name: 'FRR | verify | interfaces | assert expected /etc/network/interfaces'
+    - name: >
+        FRR | verify | interfaces | assert expected /etc/network/interfaces
       ansible.builtin.assert:
+        quiet: true
         that:
           - not _test_network_interfaces.changed
-        fail_msg: '/etc/network/interfaces is not in expected format.'
+        fail_msg: '✘ /etc/network/interfaces is not in expected format.'
 
 - name: 'FRR | verify | enable with interfaces.d sources'
   hosts: 'network-debian-12-vm-frr-enable-with-sources'
@@ -79,49 +87,37 @@
           post-up /usr/bin/systemctl restart frr.service
           source /etc/network/interfaces.d/*
 
-    - name: 'FRR | verify | interfaces | assert expected /etc/network/interfaces'
+    - name: >
+        FRR | verify | interfaces | assert expected /etc/network/interfaces
       ansible.builtin.assert:
+        quiet: true
         that:
           - not _test_network_interfaces.changed
-        fail_msg: '/etc/network/interfaces is not in expected format.'
+        fail_msg: '✘ /etc/network/interfaces is not in expected format.'
 
-    - name: 'FRR | verify | FRR | query /etc/frr/frr.conf'
-      ansible.builtin.copy:
-        src: 'frr.conf'
-        dest: '/etc/frr/frr.conf'
-        owner: 'frr'
-        group: 'frr'
-        mode: '0640'
-      check_mode: true
-      diff: true
-      register: _test_network_frr_conf
+    - name: 'FRR | verify | FRR | /etc/frr/frr.conf'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'FRR | verify | FRR | /etc/frr/frr.conf'
+        test_src: 'frr.conf'
+        test_file: '/etc/frr/frr.conf'
+        test_owner: 'frr'
+        test_group: 'frr'
+        test_mode: '0640'
 
-    - name: 'FRR | verify | FRR | assert expected /etc/frr/frr.conf'
-      ansible.builtin.assert:
-        that:
-          - not _test_network_frr_conf.changed
-        fail_msg: >
-          /etc/frr/frr.conf is not in expected format:
-          {{ _test_network_frr_conf.diff }}.
-
-    - name: 'FRR | verify | FRR | query /etc/frr/daemons'
-      ansible.builtin.copy:
-        src: 'daemons'
-        dest: '/etc/frr/daemons'
-        owner: 'frr'
-        group: 'frr'
-        mode: '0640'
-      check_mode: true
-      diff: true
-      register: _test_network_daemons
-
-    - name: 'FRR | verify | FRR | assert expected /etc/frr/daemons'
-      ansible.builtin.assert:
-        that:
-          - not _test_network_daemons.changed
-        fail_msg: >
-          /etc/frr/daemons is not in expected format:
-          {{ _test_network_daemons.diff }}.
+    - name: 'FRR | verify | FRR | /etc/frr/daemons'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'FRR | verify | FRR | /etc/frr/daemons'
+        test_src: 'daemons'
+        test_file: '/etc/frr/daemons'
+        test_owner: 'frr'
+        test_group: 'frr'
+        test_mode: '0640'
 
 - name: 'FRR | verify | enable without interfaces.d sources'
   hosts: 'network-debian-12-vm-frr-enable-no-sources'
@@ -146,46 +142,34 @@
           {{ _test_network_vagrant }}
           post-up /usr/bin/systemctl restart frr.service
 
-    - name: 'FRR | verify | interfaces | assert expected /etc/network/interfaces'
+    - name: >
+        FRR | verify | interfaces | assert expected /etc/network/interfaces
       ansible.builtin.assert:
+        quiet: true
         that:
           - not _test_network_interfaces.changed
-        fail_msg: '/etc/network/interfaces is not in expected format.'
+        fail_msg: '✘ /etc/network/interfaces is not in expected format.'
 
-    - name: 'FRR | verify | FRR | query /etc/frr/frr.conf'
-      ansible.builtin.copy:
-        src: 'frr.conf'
-        dest: '/etc/frr/frr.conf'
-        owner: 'frr'
-        group: 'frr'
-        mode: '0640'
-      check_mode: true
-      diff: true
-      register: _test_network_frr_conf
+    - name: 'FRR | verify | FRR | /etc/frr/frr.conf'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'FRR | verify | FRR | /etc/frr/frr.conf'
+        test_src: 'frr.conf'
+        test_file: '/etc/frr/frr.conf'
+        test_owner: 'frr'
+        test_group: 'frr'
+        test_mode: '0640'
 
-    - name: 'FRR | verify | FRR | assert expected /etc/frr/frr.conf'
-      ansible.builtin.assert:
-        that:
-          - not _test_network_frr_conf.changed
-        fail_msg: >
-          /etc/frr/frr.conf is not in expected format:
-          {{ _test_network_frr_conf.diff }}.
-
-    - name: 'FRR | verify | FRR | query /etc/frr/daemons'
-      ansible.builtin.copy:
-        src: 'daemons'
-        dest: '/etc/frr/daemons'
-        owner: 'frr'
-        group: 'frr'
-        mode: '0640'
-      check_mode: true
-      diff: true
-      register: _test_network_daemons
-
-    - name: 'FRR | verify | FRR | assert expected /etc/frr/daemons'
-      ansible.builtin.assert:
-        that:
-          - not _test_network_daemons.changed
-        fail_msg: >
-          /etc/frr/daemons is not in expected format:
-          {{ _test_network_daemons.diff }}.
+    - name: 'FRR | verify | FRR | /etc/frr/daemons'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'FRR | verify | FRR | /etc/frr/daemons'
+        test_src: 'daemons'
+        test_file: '/etc/frr/daemons'
+        test_owner: 'frr'
+        test_group: 'frr'
+        test_mode: '0640'

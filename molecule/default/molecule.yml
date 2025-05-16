@@ -1,6 +1,12 @@
 ---
+###############################################################################
+# Default
+###############################################################################
 # Network level testing requires VMs for kernel namespace and systemd
 # networking without affecting host. Test base role applies correctly.
+#
+# Tests:
+# * Ensure no run-time errors.
 
 dependency:
   name: 'galaxy'

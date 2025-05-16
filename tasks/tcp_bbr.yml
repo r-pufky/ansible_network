@@ -11,6 +11,7 @@
 # * https://cloud.google.com/blog/products/gcp/tcp-bbr-congestion-control-comes-to-gcp-your-internet-just-got-faster
 # * https://gist.github.com/sammdu/668070b486832f47f3b0da2200a7954f
 # * https://wiki.crowncloud.net/?How_to_enable_BBR_on_Debian_12
+# yamllint disable rule:line-length
 
 - name: 'TCP BBR | enable'
   when: network_tcp_bbr_enable and not network_container_enable

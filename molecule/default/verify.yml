@@ -1,63 +1,43 @@
 ---
-# yamllint disable rule:line-length
 - name: 'Default | verify'
   hosts: 'all'
   gather_facts: false
   become: true
   tasks:
-    - name: 'Default | verify | query /etc/resolv.conf'
-      ansible.builtin.copy:
-        src: '/etc/resolv.conf.ansible'
-        remote_src: true
-        dest: '/etc/resolv.conf'
-        owner: 'root'
-        group: 'root'
-        mode: '0644'
-      check_mode: true
-      diff: true
-      register: _test_network_resolv
+    - name: 'Default | verify | /etc/resolv.conf'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Default | verify | /etc/resolv.conf'
+        test_src: '/etc/resolv.conf.ansible'
+        test_remote_src: true
+        test_file: '/etc/resolv.conf'
+        test_owner: 'root'
+        test_group: 'root'
+        test_mode: '0644'
 
-    - name: 'Default | verify | assert expected /etc/resolv.conf'
-      ansible.builtin.assert:
-        that:
-          - not _test_network_resolv.changed
-        fail_msg: >
-          /etc/resolv.conf is not in expected format.
-
-    - name: 'Default | verify | query /etc/network/interfaces'
-      ansible.builtin.copy:
-        src: '/etc/network/interfaces.ansible'
-        remote_src: true
-        dest: '/etc/network/interfaces'
-        owner: 'root'
-        group: 'root'
-        mode: '0644'
-      check_mode: true
-      diff: true
-      register: _test_network_interfaces
-
-    - name: 'Default | verify | assert expected /etc/network/interfaces'
-      ansible.builtin.assert:
-        that:
-          - not _test_network_interfaces.changed
-        fail_msg: >
-          /etc/network/interfaces is not in expected format.
-
-    - name: 'Default | verify | get TCP BBR status'
-      ansible.builtin.command: 'sysctl --values net.ipv4.tcp_congestion_control'
-      register: _test_network_tcp_bbr
-      changed_when: false
-
-    - name: 'Default | verify | assert TCP BBR enabled'
-      ansible.builtin.assert:
-        that:
-          - _test_network_tcp_bbr.stdout == 'bbr'  # should be bbr
-        fail_msg: >
-          sysctl should report net.ipv4.tcp_congestion_control=bbr
-          ({{ _test_network_tcp_bbr.stdout }}).
+    - name: 'Default | verify | /etc/network/interfaces'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'copy.yml'
+      vars:
+        test_name: 'Default | verify | /etc/network/interfaces'
+        test_src: '/etc/network/interfaces.ansible'
+        test_remote_src: true
+        test_file: '/etc/network/interfaces'
+        test_owner: 'root'
+        test_group: 'root'
+        test_mode: '0644'
 
     - name: 'Default | verify | sysctl'
-      ansible.builtin.include_tasks: 'test_sysctl.yml'
+      ansible.builtin.include_role:
+        name: 'r_pufky.lib.tests'
+        tasks_from: 'sysctl.yml'
+      vars:
+        test_name: 'Default | verify | sysctl | {{ item.name }}'
+        test_option: '{{ item.name }}'
+        test_value: '{{ item.value }}'
       loop:
         - {name: 'net.ipv4.tcp_congestion_control', value: 'bbr'}
         - {name: 'net.ipv4.conf.all.forwarding', value: '0'}
@@ -67,3 +47,5 @@
         - {name: 'net.ipv6.conf.all.disable_ipv6', value: '1'}
         - {name: 'net.ipv6.conf.default.disable_ipv6', value: '1'}
         - {name: 'net.ipv6.conf.lo.disable_ipv6', value: '1'}
+      loop_control:
+        label: '{{ item.name }}'

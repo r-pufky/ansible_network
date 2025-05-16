@@ -17,7 +17,7 @@
 #   * network_ipv6_enable
 #
 # Special Case:
-#   * srv_container_enable=true forces network_container_enable=true.
+#   * deb_container_enable=true forces network_container_enable=true.
 #
 # Default: False.
 network_container_enable: false

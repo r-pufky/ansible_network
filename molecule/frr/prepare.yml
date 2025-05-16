@@ -1,13 +1,23 @@
 ---
-# yamllint disable rule:line-length
+###############################################################################
+# Prepare
+###############################################################################
+# Vagrant interface block is dynamically generated on creation. Capture network
+# interface block for vagrant to enable deterministic testing.
+
 - name: 'FRR | prepare'
   hosts: 'all'
   gather_facts: false
   become: true
   tasks:
     # ansible only provides block writing not reading (blockinfile).
-    - name: 'FRR | prepare | get /etc/network/interfaces vagrant-block'  # noqa command-instead-of-module vagrant interface block dynamic
-      ansible.builtin.command: 'sed -n "/^#VAGRANT-BEGIN/,/^#VAGRANT-END/p" /etc/network/interfaces'
+    - name: 'FRR | prepare | get /etc/network/interfaces vagrant-block'
+      ansible.builtin.command:  # noqa command-instead-of-module
+        argv:
+          - 'sed'
+          - '-n'
+          - '/^#VAGRANT-BEGIN/,/^#VAGRANT-END/p'
+          - '/etc/network/interfaces'
       changed_when: false
       register: _test_network_vagrant_block
 
@@ -17,7 +27,9 @@
         cacheable: true
 
     # ifreload only supports sources, not source-directory.
-    - name: 'FRR | prepare | set sources instead of source-directory (ifreload support)'
+    - name: >
+        FRR | prepare |
+        set sources instead of source-directory (ifreload support)
       ansible.builtin.lineinfile:
         path: '/etc/network/interfaces'
         regexp: '^source-directory(.*)$'

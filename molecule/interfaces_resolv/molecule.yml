@@ -1,8 +1,14 @@
 ---
+###############################################################################
+# Interfaces Resolv
+###############################################################################
 # Network level testing requires VMs for kernel namespace and systemd
-# networking without affecting host:
-# * /etc/network/interfaces with defaults applied correctly with IPv6 enabled
-# * /etc/resolv.conf written correctly
+# networking without affecting host. Test base role applies correctly.
+#
+# Tests:
+# * /etc/network/interfaces with defaults applied correctly with IPv6 enabled.
+# * /etc/resolv.conf written correctly.
+
 dependency:
   name: 'galaxy'
 driver:

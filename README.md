@@ -1,17 +1,15 @@
 # Network
-Network configuration.
+Advanced network configuration management.
 
 ## Requirements
 [supported platforms](https://github.com/r-pufky/ansible_network/blob/main/meta/main.yml)
-
-[collections/roles](https://github.com/r-pufky/ansible_network/blob/main/meta/requirements.yml)
 
 ## Role Variables
 [defaults](https://github.com/r-pufky/ansible_network/blob/main/defaults/main)
 
 ## Dependencies
-Part of the [r_pufky.srv](https://github.com/r-pufky/ansible_collection_srv)
-collection.
+**galaxy-ng** roles cannot be used independently. Part of
+[r_pufky.deb](https://github.com/r-pufky/ansible_collection_deb) collection.
 
 ## Example Playbook
 Apply network configuration to hosts.
@@ -51,7 +49,7 @@ Apply the base role
 ``` yaml
 - name: 'Apply base configuration'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.network'
+    name: 'r_pufky.deb.network'
 ```
 
 ## FRRouting is supported as well.
@@ -60,7 +58,7 @@ FRR can be configured with interfaces simultaneously.
 ``` yaml
 - name: 'Add openfabric routing support'
   ansible.builtin.include_role:
-    name: 'r_pufky.srv.network'
+    name: 'r_pufky.deb.network'
   vars:
     network_frr_enable: true
     network_frr_interfaces_enable: true
@@ -93,7 +91,7 @@ FRR can be configured with interfaces simultaneously.
 ```
 
 ## Development
-Configure [environment](https://github.com/r-pufky/ansible_collection_srv/blob/main/docs/dev/environment/README.md)
+Configure [environment](https://github.com/r-pufky/ansible_collection_docs/blob/main/dev/environment/README.md)
 
 Run all unit tests:
 ``` bash
