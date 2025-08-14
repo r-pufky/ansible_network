@@ -5,13 +5,13 @@
 # Vagrant interface block is dynamically generated on creation. Capture network
 # interface block for vagrant to enable deterministic testing.
 
-- name: 'FRR | prepare'
+- name: 'Prepare'
   hosts: 'all'
   gather_facts: false
   become: true
   tasks:
     # ansible only provides block writing not reading (blockinfile).
-    - name: 'FRR | prepare | get /etc/network/interfaces vagrant-block'
+    - name: 'Prepare | get /etc/network/interfaces vagrant-block'
       ansible.builtin.command:  # noqa command-instead-of-module
         argv:
           - 'sed'
@@ -21,14 +21,14 @@
       changed_when: false
       register: _test_network_vagrant_block
 
-    - name: 'FRR | prepare | cache vagrant node network configuration'
+    - name: 'Prepare | cache vagrant node network configuration'
       ansible.builtin.set_fact:
         _test_network_vagrant: '{{ _test_network_vagrant_block.stdout }}'
         cacheable: true
 
     # ifreload only supports sources, not source-directory.
     - name: >
-        FRR | prepare |
+        Prepare |
         set sources instead of source-directory (ifreload support)
       ansible.builtin.lineinfile:
         path: '/etc/network/interfaces'

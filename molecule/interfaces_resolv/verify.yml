@@ -8,12 +8,12 @@
 #   _test_network_vagrant: str - vagrant network block.
 #   _test_network_resolv: str - resolv.conf block.
 
-- name: 'Interfaces resolve | verify'
+- name: 'Verify'
   hosts: 'all'
   gather_facts: false
   become: true
   tasks:
-    - name: 'Interfaces resolve | verify | assert fact_caching not expired'
+    - name: 'Verify | assert fact_caching not expired'
       ansible.builtin.assert:
         quiet: true
         that:
@@ -21,12 +21,12 @@
           - '_test_network_vagrant is defined'
         fail_msg: '⚠ fact_caching has expired; re-run prepare.'
 
-    - name: 'Interfaces resolve | verify | /etc/resolv.conf'
+    - name: 'Verify | /etc/resolv.conf'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'template.yml'
       vars:
-        test_name: 'Interfaces resolve | verify | /etc/resolv.conf'
+        test_name: 'Verify | /etc/resolv.conf'
         test_src: 'template.j2'
         test_file: '/etc/resolv.conf'
         test_owner: 'root'
@@ -37,12 +37,12 @@
           {{ _test_network_resolv }}
           # vm_network custom resolv.conf modification test.
 
-    - name: 'Interfaces resolve | verify | /etc/network/interfaces'
+    - name: 'Verify | /etc/network/interfaces'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'template.yml'
       vars:
-        test_name: 'Interfaces resolve | verify | /etc/network/interfaces'
+        test_name: 'Verify | /etc/network/interfaces'
         test_src: 'template.j2'
         test_file: '/etc/network/interfaces'
         test_owner: 'root'
@@ -56,28 +56,27 @@
           {{ _test_network_vagrant }}
           source /etc/network/interfaces.d/*
 
-    - name: >
-        Interfaces resolve | verify | interfaces |
-        /etc/network/interfaces.d/test_adapter
+    - name: 'Verify | interfaces | /etc/network/interfaces.d/test_adapter'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'copy.yml'
       vars:
         test_name: >
-          Interfaces resolve | verify | interfaces |
+          Verify | interfaces |
           /etc/network/interfaces.d/test_adapter
         test_src: 'test_adapter'
         test_file: '/etc/network/interfaces.d/test_adapter'
         test_owner: 'root'
         test_group: 'root'
         test_mode: '0644'
+        test_diff: true
 
-    - name: 'Interfaces resolve | verify | interfaces | get IPv6 status'
+    - name: 'Verify | interfaces | get IPv6 status'
       ansible.builtin.command: 'sysctl --values net.ipv6.conf.all.disable_ipv6'
       register: _test_network_ipv6
       changed_when: false
 
-    - name: 'Interfaces resolve | verify | interfaces | assert IPv6 enabled'
+    - name: 'Verify | interfaces | assert IPv6 enabled'
       ansible.builtin.assert:
         quiet: true
         that:

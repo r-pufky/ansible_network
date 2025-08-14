@@ -1,10 +1,10 @@
 ---
-- name: 'VM network | prepare'
+- name: 'Prepare'
   hosts: 'all'
   gather_facts: false
   become: true
   tasks:
-    - name: 'VM network | prepare | get /etc/resolv.conf'
+    - name: 'Prepare | get /etc/resolv.conf'
       ansible.builtin.copy:
         src: '/etc/resolv.conf'
         remote_src: true
@@ -13,7 +13,7 @@
         group: 'root'
         mode: '0644'
 
-    - name: 'Default | prepare | get /etc/network/interfaces'
+    - name: 'Prepare | get /etc/network/interfaces'
       ansible.builtin.copy:
         src: '/etc/network/interfaces'
         remote_src: true

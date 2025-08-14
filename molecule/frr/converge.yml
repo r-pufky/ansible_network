@@ -7,19 +7,19 @@
 # Args:
 #   _test_network_vagrant: str - vagrant network blocks.
 
-- name: 'FRR | converge'
+- name: 'Converge'
   hosts: 'all'
   gather_facts: false
   become: true
   tasks:
-    - name: 'FRR | converge | assert fact_caching not expired'
+    - name: 'Converge | assert fact_caching not expired'
       ansible.builtin.assert:
         quiet: true
         that:
           - '_test_network_vagrant is defined'
         fail_msg: '⚠ fact_caching has expired; re-run prepare.'
 
-    - name: 'FRR | converge | run r_pufky.deb.network'
+    - name: 'Converge | run r_pufky.deb.network'
       ansible.builtin.include_role:
         name: 'r_pufky.deb.network'
       vars:

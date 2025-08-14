@@ -1,43 +1,46 @@
 ---
-- name: 'Default | verify'
+- name: 'Verify'
   hosts: 'all'
   gather_facts: false
   become: true
   tasks:
-    - name: 'Default | verify | /etc/resolv.conf'
+    - name: 'Verify | /etc/resolv.conf'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'copy.yml'
       vars:
-        test_name: 'Default | verify | /etc/resolv.conf'
+        test_name: 'Verify | /etc/resolv.conf'
         test_src: '/etc/resolv.conf.ansible'
         test_remote_src: true
         test_file: '/etc/resolv.conf'
         test_owner: 'root'
         test_group: 'root'
         test_mode: '0644'
+        test_diff: true
 
-    - name: 'Default | verify | /etc/network/interfaces'
+    - name: 'Verify | /etc/network/interfaces'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'copy.yml'
       vars:
-        test_name: 'Default | verify | /etc/network/interfaces'
+        test_name: 'Verify | /etc/network/interfaces'
         test_src: '/etc/network/interfaces.ansible'
         test_remote_src: true
         test_file: '/etc/network/interfaces'
         test_owner: 'root'
         test_group: 'root'
         test_mode: '0644'
+        test_diff: true
 
-    - name: 'Default | verify | sysctl'
+    - name: 'Verify | sysctl'
       ansible.builtin.include_role:
         name: 'r_pufky.lib.tests'
         tasks_from: 'sysctl.yml'
       vars:
-        test_name: 'Default | verify | sysctl | {{ item.name }}'
+        test_name: 'Verify | sysctl | {{ item.name }}'
         test_option: '{{ item.name }}'
         test_value: '{{ item.value }}'
+        test_diff: true
       loop:
         - {name: 'net.ipv4.tcp_congestion_control', value: 'bbr'}
         - {name: 'net.ipv4.conf.all.forwarding', value: '0'}
