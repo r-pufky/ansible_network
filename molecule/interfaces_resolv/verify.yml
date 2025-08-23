@@ -19,7 +19,12 @@
         that:
           - '_test_network_resolv is defined'
           - '_test_network_vagrant is defined'
-        fail_msg: '⚠ fact_caching has expired; re-run prepare.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │             fact_caching has expired; re-run prepare.             │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
     - name: 'Verify | /etc/resolv.conf'
       ansible.builtin.include_role:
@@ -69,7 +74,6 @@
         test_owner: 'root'
         test_group: 'root'
         test_mode: '0644'
-        test_diff: true
 
     - name: 'Verify | interfaces | get IPv6 status'
       ansible.builtin.command: 'sysctl --values net.ipv6.conf.all.disable_ipv6'
@@ -81,6 +85,10 @@
         quiet: true
         that:
           - _test_network_ipv6.stdout | int == 0
-        fail_msg: >
-          ✘ sysctl should report net.ipv6.conf.all.disable_ipv6=0
-          ({{ _test_network_ipv6.stdout }}).
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │       sysctl should report net.ipv6.conf.all.disable_ipv6=0       │
+          │                                                                   │
+          ├───────────────────────────────────────────────────────────────────╯
+          │ {{ _test_network_ipv6.stdout }}

@@ -28,10 +28,15 @@
     that:
       - 'network_local | length > 0'
     fail_msg: |
-      ✘ network_local must have defined interfaces if
-      network_interfaces_source_enable.
-
-      Otherwise ifreload and post-up will fail.
+      ╭───────────────────────────────────────────────────────────────────╮
+      │                                                                   │
+      │            network_local must have defined interfaces.            │
+      │                                                                   │
+      ├───────────────────────────────────────────────────────────────────╯
+      │ network_local must have defined interfaces if
+      │ network_interfaces_source_enable.
+      │
+      │ Otherwise ifreload and post-up will fail.
 
 - name: 'Network | interfaces | set'
   when: network_interfaces | length > 0

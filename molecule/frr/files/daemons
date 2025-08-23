@@ -14,6 +14,7 @@
 #
 # The watchfrr, zebra and staticd daemons are always started.
 #
+mgmtd=no
 bgpd=no
 ospfd=no
 ospf6d=no
@@ -40,6 +41,7 @@ pathd=no
 #
 vtysh_enable=yes
 zebra_options='-A 127.0.0.1 -s 90000000'
+mgmtd_options='-A 127.0.0.1'
 bgpd_options='-A 127.0.0.1'
 ospfd_options='-A 127.0.0.1'
 ospf6d_options='-A ::1'
@@ -91,6 +93,13 @@ frr_profile='traditional'
 MAX_FDS=1024
 
 
+# Uncomment this option if you want to run FRR as a non-root user. Note that
+# you should know what you are doing since most of the daemons need root
+# to work. This could be useful if you want to run FRR in a container
+# for instance.
+FRR_NO_ROOT=no
+
+
 # For any daemon, you can specify a "wrap" command to start instead of starting
 # the daemon directly. This will simply be prepended to the daemon invocation.
 # These variables have the form daemon_wrap, where 'daemon' is the name of the
@@ -117,6 +126,7 @@ MAX_FDS=1024
 # variable.
 #
 all_wrap=''
+mgmtd_wrap=''
 bgpd_wrap=''
 ospfd_wrap=''
 ospf6d_wrap=''

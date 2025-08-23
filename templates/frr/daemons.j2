@@ -14,6 +14,7 @@
 #
 # The watchfrr, zebra and staticd daemons are always started.
 #
+mgmtd={{ 'yes' if network_frr_daemon_mgmtd_enable else 'no' }}
 bgpd={{ 'yes' if network_frr_daemon_bgpd_enable else 'no' }}
 ospfd={{ 'yes' if network_frr_daemon_ospfd_enable else 'no' }}
 ospf6d={{ 'yes' if network_frr_daemon_ospf6d_enable else 'no' }}
@@ -40,6 +41,7 @@ pathd={{ 'yes' if network_frr_daemon_pathd_enable else 'no' }}
 #
 vtysh_enable={{ 'yes' if network_frr_daemon_vtysh_enable else 'no' }}
 zebra_options='{{ network_frr_daemon_zebra_options | default(["-A 127.0.0.1", "-s 90000000"]) | join(" ") }}'
+mgmtd_options='{{ network_frr_daemon_mgmtd_options | default(["-A 127.0.0.1"]) | join(" ") }}'
 bgpd_options='{{ network_frr_daemon_bgpd_options | default(["-A 127.0.0.1"]) | join(" ") }}'
 ospfd_options='{{ network_frr_daemon_ospfd_options | default(["-A 127.0.0.1"]) | join(" ") }}'
 ospf6d_options='{{ network_frr_daemon_ospf6d_options | default(["-A ::1"]) | join(" ") }}'
@@ -91,6 +93,13 @@ frr_profile='{{ network_frr_daemon_frr_profile | default("traditional") }}'
 MAX_FDS={{ network_frr_daemon_max_fds | default(1024) }}
 
 
+# Uncomment this option if you want to run FRR as a non-root user. Note that
+# you should know what you are doing since most of the daemons need root
+# to work. This could be useful if you want to run FRR in a container
+# for instance.
+FRR_NO_ROOT={{ 'yes' if network_frr_daemon_frr_no_root else 'no' }}
+
+
 # For any daemon, you can specify a "wrap" command to start instead of starting
 # the daemon directly. This will simply be prepended to the daemon invocation.
 # These variables have the form daemon_wrap, where 'daemon' is the name of the
@@ -117,6 +126,7 @@ MAX_FDS={{ network_frr_daemon_max_fds | default(1024) }}
 # variable.
 #
 all_wrap='{{ network_frr_daemon_all_wrap | default("") }}'
+mgmtd_wrap='{{ network_frr_daemon_mgmtd_wrap | default("") }}'
 bgpd_wrap='{{ network_frr_daemon_bgpd_wrap | default("") }}'
 ospfd_wrap='{{ network_frr_daemon_ospfd_wrap | default("") }}'
 ospf6d_wrap='{{ network_frr_daemon_ospf6d_wrap | default("") }}'

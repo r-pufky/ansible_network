@@ -130,15 +130,15 @@ network_interfaces_source_before: false
 # moving the config to network_interfaces to resolve the issue.
 #
 # network_local:
-#     list of dict - network local configuration.
-#   - service: str - name of local interface/service config
+#     list of dict - Network local configuration.
+#   - service: str - Name of local interface/service config
 #           (/etc/network/interfaces.d/{NAME}).
-#     state: str - whether config should be managed or removed
+#     state: str - Whether config should be managed or removed.
 #         Values:
-#           present: manage configuration
-#            absent: remove configuration
+#           present: Manage configuration.
+#            absent: Remove configuration.
 #         Default: 'present'.
-#     config: str - network interface config
+#     config: str - Network interface config.
 #
 # network_local:
 #   - service: 'lo'

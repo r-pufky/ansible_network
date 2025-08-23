@@ -71,9 +71,9 @@ network_frr_daemon_vtysh_enable: true
 # Default configuration profile for all daemons.
 #
 # Special Case:
-#   traditional: defaults adhering mostly to IETF standards or common practices
+#   traditional: Defaults adhering mostly to IETF standards or common practices
 #                in wide-area internet routing.
-#    datacenter: a single administrative domain with intra-domain links using
+#    datacenter: A single administrative domain with intra-domain links using
 #                aggressive timers.
 #
 # Default: 'traditional'
@@ -91,6 +91,14 @@ network_frr_daemon_frr_profile: 'traditional'
 # Reference:
 # * https://docs.frrouting.org/en/latest/basic.html#cmdoption-limit-fds
 network_frr_daemon_max_fds: 1024
+
+# Run FRR as non-root user?
+#
+# Most of the daemons need root to work. This could be useful if you want to
+# run FRR in a container for instance.
+#
+# Default: False.
+network_frr_daemon_frr_no_root: false
 
 # list of str options to pass to all daemons. Default: [].
 network_frr_daemon_frr_global_options: []
@@ -122,6 +130,17 @@ network_frr_daemon_staticd_options: ['-A 127.0.0.1']
 #
 # Default: '' (no wrap).
 network_frr_daemon_all_wrap: ''
+
+# MGMTd (Management Daemon).
+###############################################################################
+# Enable MGMTd daemon? Default: False.
+network_frr_daemon_mgmtd_enable: false
+
+# list of str MGMTd daemon options. Default: ['-A 127.0.0.1'].
+network_frr_daemon_mgmtd_options: ['-A 127.0.0.1']
+
+# Wrap MGMTd daemon with specified commands. Default: ''.
+network_frr_daemon_mgmtd_wrap: ''
 
 # BGP (Border Gateway Protocol).
 ###############################################################################

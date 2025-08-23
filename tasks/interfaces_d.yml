@@ -5,9 +5,9 @@
 # Configure local interfaces options.
 #
 # Args:
-#   service: str - name of local config (/etc/network/interfaces.d/{NAME})
-#   state: str - whether config should be present or absent
-#   config: str - network interface config, see defaults.yml
+#   service: str - Name of local config (/etc/network/interfaces.d/{NAME}).
+#   state: str - Whether config should be present or absent.
+#   config: str - Network interface config, see defaults.yml.
 #
 # Reference:
 # * https://manpages.debian.org/bookworm/ifupdown2/interfaces.5.en.html

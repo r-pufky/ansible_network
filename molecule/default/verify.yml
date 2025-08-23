@@ -16,7 +16,6 @@
         test_owner: 'root'
         test_group: 'root'
         test_mode: '0644'
-        test_diff: true
 
     - name: 'Verify | /etc/network/interfaces'
       ansible.builtin.include_role:
@@ -30,7 +29,6 @@
         test_owner: 'root'
         test_group: 'root'
         test_mode: '0644'
-        test_diff: true
 
     - name: 'Verify | sysctl'
       ansible.builtin.include_role:

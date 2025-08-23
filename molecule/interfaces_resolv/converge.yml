@@ -19,7 +19,12 @@
         that:
           - '_test_network_resolv is defined'
           - '_test_network_vagrant is defined'
-        fail_msg: '⚠ fact_caching has expired; re-run prepare.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │             fact_caching has expired; re-run prepare.             │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
     - name: 'Converge | run r_pufky.deb.network'
       ansible.builtin.include_role:

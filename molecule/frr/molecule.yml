@@ -59,11 +59,11 @@ provisioner:
           max-lsp-lifetime 600
           lsp-refresh-interval 180
     host_vars:
-      network-debian-12-vm-frr-disable-management:
+      network-debian-13-vm-frr-disable-management:
         network_interfaces_source_enable: false
         network_frr_interfaces_enable: false
         network_frr_config: 'log syslog informational'
-      network-debian-12-vm-frr-enable-with-sources:
+      network-debian-13-vm-frr-enable-with-sources:
         network_interfaces_source_enable: true
         network_frr_interfaces_enable: true
         network_frr_daemon_fabricd_enable: true
@@ -74,29 +74,32 @@ provisioner:
               # allow-hotplug enp15s0f10
               # iface enp15s0f10 inet manual
               # test network adapter loaded from interfaces.d
-      network-debian-12-vm-frr-enable-no-sources:
+      network-debian-13-vm-frr-enable-no-sources:
         network_interfaces_source_enable: false
         network_frr_interfaces_enable: true
         network_frr_daemon_fabricd_enable: true
 platforms:
-  - name: 'network-debian-12-vm-frr-disable-management'
-    box: 'debian/bookworm64'
+  - name: 'network-debian-13-vm-frr-disable-management'
+    # TODO(role): switch to debian/trixie64 when released.
+    box: 'debian/testing64'
     memory: 4096
     cpus: 2
     interfaces:
       - network_name: private_network  # network_name required
         auto_config: true
         type: 'dhcp'
-  - name: 'network-debian-12-vm-frr-enable-with-sources'
-    box: 'debian/bookworm64'
+  - name: 'network-debian-13-vm-frr-enable-with-sources'
+    # TODO(role): switch to debian/trixie64 when released.
+    box: 'debian/testing64'
     memory: 4096
     cpus: 2
     interfaces:
       - network_name: private_network  # network_name required
         auto_config: true
         type: 'dhcp'
-  - name: 'network-debian-12-vm-frr-enable-no-sources'
-    box: 'debian/bookworm64'
+  - name: 'network-debian-13-vm-frr-enable-no-sources'
+    # TODO(role): switch to debian/trixie64 when released.
+    box: 'debian/testing64'
     memory: 4096
     cpus: 2
     interfaces:

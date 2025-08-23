@@ -18,7 +18,12 @@
         quiet: true
         that:
           - '_test_network_vagrant is defined'
-        fail_msg: '✘ fact_caching has expired; re-run prepare.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │             fact_caching has expired; re-run prepare.             │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
     - name: 'Verify | FRR | gather frr.service status'
       ansible.builtin.command: 'systemctl status frr.service'
@@ -31,10 +36,15 @@
         that:
           - _test_network_frr.rc == 0
           - '"Active: active" in _test_network_frr.stdout'
-        fail_msg: '✘ frr.service should be enabled and active.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │             frr.service should be enabled and active.             │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'Verify | enable interface management disabled'
-  hosts: 'network-debian-12-vm-frr-disable-management'
+  hosts: 'network-debian-13-vm-frr-disable-management'
   gather_facts: false
   become: true
   tasks:
@@ -60,10 +70,15 @@
         quiet: true
         that:
           - not _test_network_interfaces.changed
-        fail_msg: '✘ /etc/network/interfaces is not in expected format.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │        /etc/network/interfaces is not in expected format.         │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
 - name: 'Verify | enable with interfaces.d sources'
-  hosts: 'network-debian-12-vm-frr-enable-with-sources'
+  hosts: 'network-debian-13-vm-frr-enable-with-sources'
   gather_facts: false
   become: true
   tasks:
@@ -91,7 +106,12 @@
         quiet: true
         that:
           - not _test_network_interfaces.changed
-        fail_msg: '✘ /etc/network/interfaces is not in expected format.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │        /etc/network/interfaces is not in expected format.         │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
     - name: 'Verify | FRR | /etc/frr/frr.conf'
       ansible.builtin.include_role:
@@ -104,7 +124,6 @@
         test_owner: 'frr'
         test_group: 'frr'
         test_mode: '0640'
-        test_diff: true
 
     - name: 'Verify | FRR | /etc/frr/daemons'
       ansible.builtin.include_role:
@@ -117,10 +136,9 @@
         test_owner: 'frr'
         test_group: 'frr'
         test_mode: '0640'
-        test_diff: true
 
 - name: 'Verify | enable without interfaces.d sources'
-  hosts: 'network-debian-12-vm-frr-enable-no-sources'
+  hosts: 'network-debian-13-vm-frr-enable-no-sources'
   gather_facts: false
   become: true
   tasks:
@@ -147,7 +165,12 @@
         quiet: true
         that:
           - not _test_network_interfaces.changed
-        fail_msg: '✘ /etc/network/interfaces is not in expected format.'
+        fail_msg: |
+          ╭───────────────────────────────────────────────────────────────────╮
+          │                                                                   │
+          │        /etc/network/interfaces is not in expected format.         │
+          │                                                                   │
+          ╰───────────────────────────────────────────────────────────────────╯
 
     - name: 'Verify | FRR | /etc/frr/frr.conf'
       ansible.builtin.include_role:
@@ -160,7 +183,6 @@
         test_owner: 'frr'
         test_group: 'frr'
         test_mode: '0640'
-        test_diff: true
 
     - name: 'Verify | FRR | /etc/frr/daemons'
       ansible.builtin.include_role:
@@ -173,4 +195,3 @@
         test_owner: 'frr'
         test_group: 'frr'
         test_mode: '0640'
-        test_diff: true
