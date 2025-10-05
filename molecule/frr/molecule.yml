@@ -79,27 +79,24 @@ provisioner:
         network_frr_interfaces_enable: true
         network_frr_daemon_fabricd_enable: true
 platforms:
-  - name: 'network-debian-13-vm-frr-disable-management'
-    # TODO(role): switch to debian/trixie64 when released.
-    box: 'debian/testing64'
+  - name: 'network-frr-disable-mgmt'
+    box: 'inception-of-things/debian-trixie'
     memory: 4096
     cpus: 2
     interfaces:
       - network_name: private_network  # network_name required
         auto_config: true
         type: 'dhcp'
-  - name: 'network-debian-13-vm-frr-enable-with-sources'
-    # TODO(role): switch to debian/trixie64 when released.
-    box: 'debian/testing64'
+  - name: 'network-frr-enable-src'
+    box: 'inception-of-things/debian-trixie'
     memory: 4096
     cpus: 2
     interfaces:
       - network_name: private_network  # network_name required
         auto_config: true
         type: 'dhcp'
-  - name: 'network-debian-13-vm-frr-enable-no-sources'
-    # TODO(role): switch to debian/trixie64 when released.
-    box: 'debian/testing64'
+  - name: 'network-frr-enable-nosrc'
+    box: 'inception-of-things/debian-trixie'
     memory: 4096
     cpus: 2
     interfaces:

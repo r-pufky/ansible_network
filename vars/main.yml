@@ -11,13 +11,18 @@ network_role_validate_frr_version: '10.4.1'
 ###############################################################################
 # APT Packages
 ###############################################################################
+# TODO(forky): isc-dhcp-client is officially deprecated in Trixie and should
+#     be actively migrated to use systemd-networkd or dhcpcd-base. For now,
+#     install with isc-dhcp-client through trixie release; and migrate to
+#     systemd-networkd/systemd-resolved or dhcpcd-base in Forky release.
 #
 # Reference:
 # * https://github.com/FRRouting/frr
 # * https://www.frrouting.org
 
 network_role_packages:
-  - 'ifupdown2'  # https://packages.debian.org/bookworm/ifupdown2 (ifreload).
+  - 'ifupdown2'  # https://packages.debian.org/trixie/ifupdown2 (ifreload).
+  - 'isc-dhcp-client'  # https://packages.debian.org/trixie/isc-dhcp-client
 
 network_role_frr_packages:
   - 'frr'

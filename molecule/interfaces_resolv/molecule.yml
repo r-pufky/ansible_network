@@ -42,9 +42,8 @@ provisioner:
               # iface enp15s0f10 inet manual
               # test network adapter loaded from interfaces.d
 platforms:
-  - name: 'network-debian-13-vm-interfaces-resolv'
-    # TODO(role): switch to debian/trixie64 when released.
-    box: 'debian/testing64'
+  - name: 'network-debian-13-vm-intr'
+    box: 'inception-of-things/debian-trixie'
     memory: 4096
     cpus: 2
     interfaces:
