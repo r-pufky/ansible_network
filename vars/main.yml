@@ -3,10 +3,12 @@
 # Network Role Options
 ###############################################################################
 
-# Last time debian options were validated against a default configuration.
-network_role_validate_date: '2025-08-23'
-network_role_validate_release: 'trixie'
-network_role_validate_frr_version: '10.4.1'
+network___release: "{{ {} | r_pufky.data.v3(
+
+    _date='2025-08-23',
+    _debian='trixie',
+    _frr='10.4.1',
+  ) }}"
 
 ###############################################################################
 # APT Packages
@@ -20,9 +22,9 @@ network_role_validate_frr_version: '10.4.1'
 # * https://github.com/FRRouting/frr
 # * https://www.frrouting.org
 
-network_role_packages:
+network___packages:
   - 'ifupdown2'  # https://packages.debian.org/trixie/ifupdown2 (ifreload).
   - 'isc-dhcp-client'  # https://packages.debian.org/trixie/isc-dhcp-client
 
-network_role_frr_packages:
+network___frr_packages:
   - 'frr'

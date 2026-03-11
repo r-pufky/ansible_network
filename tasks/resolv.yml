@@ -8,19 +8,20 @@
 # Reference:
 # * https://wiki.debian.org/resolv.conf
 
-- name: 'Resolv | set /etc/resolv.conf'
-  when: network_resolv | length > 0
+- name: 'Resolv | filesystem | set /etc/resolv.conf'
+  when: network_cfg_resolv | length > 0
   block:
-    - name: 'Resolv | set /etc/resolv.conf mutable'
+    - name: 'Resolv | filesystem | set /etc/resolv.conf mutable'
       ansible.builtin.file:
         path: '/etc/resolv.conf'
         attributes: '-i'
       become: true
-      register: _network_resolv_attr
-      changed_when: '"i" not in _network_resolv_attr.diff.before.attributes'
+      diff: true
+      register: network__resolv_attr
+      changed_when: '"i" not in network__resolv_attr.diff.before.attributes'
 
-    - name: 'Resolv | set /etc/resolv.conf'
-      notify: 'Handlers | reload restart networking'
+    - name: 'Resolv | filesystem | set /etc/resolv.conf'
+      notify: 'Handlers | ifreload networking'
       ansible.builtin.template:
         src: 'resolv.conf.j2'
         dest: '/etc/resolv.conf'
@@ -29,11 +30,12 @@
         mode: '0644'
         force: true
 
-- name: 'Resolv | set /etc/resolv.conf immutable'
-  when: network_resolv_immutable
+- name: 'Resolv | filesystem | set /etc/resolv.conf immutable'
+  when: network_cfg_resolv_immutable
   ansible.builtin.file:
     path: '/etc/resolv.conf'
     attributes: '+i'
   become: true
-  register: _network_resolv_attr
-  changed_when: '"i" not in _network_resolv_attr.diff.before.attributes'
+  diff: true
+  register: network__resolv_attr
+  changed_when: '"i" not in network__resolv_attr.diff.before.attributes'

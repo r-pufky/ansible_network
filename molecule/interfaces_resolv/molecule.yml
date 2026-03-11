@@ -14,27 +14,26 @@ dependency:
 driver:
   name: 'vagrant'
   provider:
-    name: 'virtualbox'
-    config_options:
-      ssh.keep_alive: true
-      ssh.remote_user: 'root'
-    options:
-      append_platform_to_hostname: false
+    name: 'libvirt'
+    type: 'libvirt'
 provisioner:
   name: 'ansible'
+  connection_options:
+    ansible_ssh_user: 'vagrant'
+    ansible_become: true
   config_options:
     defaults:
       interpreter_python: 'auto_silent'
       callback_whitelist: 'profile_tasks, timer, yaml'
-      fact_caching: 'jsonfile'  # cache vagrant VM network configuration
+      fact_caching: 'jsonfile'  # cache vagrant VM network configuration.
       fact_caching_connection: '/tmp/facts_cache'
       fact_caching_timeout: 7200
   inventory:
     group_vars:
       all:
-        network_ipv6_enable: true
-        network_interfaces_source_enable: true
-        network_local:
+        network_srv_ipv6: true
+        network_cfg_interfaces_source_enable: true
+        network_cfg_local:
           - service: 'test_adapter'
             state: 'present'
             config: |
@@ -42,31 +41,22 @@ provisioner:
               # iface enp15s0f10 inet manual
               # test network adapter loaded from interfaces.d
 platforms:
-  - name: 'network-debian-13-vm-intr'
-    box: 'inception-of-things/debian-trixie'
+  - name: 'network-interfaces-resolv'
+    box: 'debian/trixie64'
     memory: 4096
     cpus: 2
     interfaces:
-      - network_name: private_network  # network_name required
+      - network_name: 'private_network'
         auto_config: true
         type: 'dhcp'
 verifier:
   name: 'ansible'
-lint: |
-  set -e
-  yamllint .
-  ansible-lint .
 scenario:
   test_sequence:
-    # - 'dependency'
-    # - 'cleanup'
     - 'destroy'
     - 'syntax'
     - 'create'
     - 'prepare'
     - 'converge'
-    # - 'idempotence'  # /etc/resolv.conf set immutable
-    # - 'side_effect'
     - 'verify'
-    # - 'cleanup'
     - 'destroy'

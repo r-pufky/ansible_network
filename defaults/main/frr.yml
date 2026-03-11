@@ -10,9 +10,6 @@
 # * https://frrouting.org/
 # * https://github.com/frrouting/frr
 
-# Enable FRR? Default: False.
-network_frr_enable: false
-
 # Enable automatic informed FRR service restarts in interfaces?
 #
 # Include FRR service restarts in interfaces. FRR (FRRouting) must be informed

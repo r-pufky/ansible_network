@@ -12,10 +12,9 @@
 # * https://medium.com/@voidp_46686/ip-forwarding-in-linux-6a9f7921d73d
 
 - name: >
-    IPv4 | IP forwarding
-    {% if network_ipv4_forwarding_enable %}enable{% else %}disable{% endif %}
-  when: not network_container_enable
-  notify: 'Handlers | restart networking'
+    IPv4 | sysctl | IP forwarding |
+    {% if network_srv_ipv4_forwarding %}enable{% else %}disable{% endif %}
+  notify: 'Handlers | networking'
   ansible.posix.sysctl:
     name: '{{ item.name }}'
     value: '{{ item.value }}'
@@ -23,6 +22,6 @@
     reload: true
   loop:
     - name: 'net.ipv4.conf.all.forwarding'
-      value: '{{ network_ipv4_forwarding_enable | bool | int }}'
+      value: '{{ network_srv_ipv4_forwarding | bool | int }}'
     - name: 'net.ipv4.conf.default.forwarding'
-      value: '{{ network_ipv4_forwarding_enable | bool | int }}'
+      value: '{{ network_srv_ipv4_forwarding | bool | int }}'

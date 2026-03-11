@@ -12,19 +12,23 @@
 # Reference:
 # * https://manpages.debian.org/bookworm/ifupdown2/interfaces.5.en.html
 
-- name: 'Interfaces.d | remove local config {{ service }}'
+- name: '{{
+      "Interfaces.d | filesystem | remove /etc/network/interfaces.d/" ~ service
+    }}'
   when: state | lower == 'absent'
-  notify: 'Handlers | reload restart networking'
+  notify: 'Handlers | ifreload networking'
   ansible.builtin.file:
-    path: '/etc/network/interfaces.d/{{ service }}'
+    path: '{{ "/etc/network/interfaces.d/" ~ service }}'
     state: 'absent'
 
-- name: 'Interfaces.d | set local config {{ service }}'
+- name: '{{
+      "Interfaces.d | filesystem | set /etc/network/interfaces.d/" ~ service
+    }}'
   when: state | lower == 'present'
-  notify: 'Handlers | reload restart networking'
+  notify: 'Handlers | ifreload networking'
   ansible.builtin.template:
     src: 'local.j2'
-    dest: '/etc/network/interfaces.d/{{ service }}'
+    dest: '{{ "/etc/network/interfaces.d/" ~ service }}'
     owner: 'root'
     group: 'root'
     mode: '0644'

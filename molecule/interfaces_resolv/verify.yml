@@ -5,33 +5,30 @@
 # Verify resolv configuration is correct using cached dynamic vagrant blocks.
 #
 # Args:
-#   _test_network_vagrant: str - vagrant network block.
-#   _test_network_resolv: str - resolv.conf block.
+#   network__test_vagrant: str - vagrant network block.
+#   network__test_resolv: str - resolv.conf block.
 
 - name: 'Verify'
   hosts: 'all'
   gather_facts: false
   become: true
   tasks:
-    - name: 'Verify | assert fact_caching not expired'
+    - name: 'Verify | assert | fact_caching not expired'
       ansible.builtin.assert:
         quiet: true
         that:
-          - '_test_network_resolv is defined'
-          - '_test_network_vagrant is defined'
+          - ansible_facts['network__test_resolv'] is defined
+          - ansible_facts['network__test_vagrant'] is defined
         fail_msg: |
-          ╭───────────────────────────────────────────────────────────────────╮
-          │                                                                   │
-          │             fact_caching has expired; re-run prepare.             │
-          │                                                                   │
-          ╰───────────────────────────────────────────────────────────────────╯
 
-    - name: 'Verify | /etc/resolv.conf'
+          ✘ fact_caching has expired; re-run prepare.
+
+    - name: 'Verify | test | /etc/resolv.conf'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
+        name: 'r_pufky.data.test'
         tasks_from: 'template.yml'
       vars:
-        test_name: 'Verify | /etc/resolv.conf'
+        test_name: 'Verify | test | /etc/resolv.conf'
         test_src: 'template.j2'
         test_file: '/etc/resolv.conf'
         test_owner: 'root'
@@ -39,15 +36,15 @@
         test_mode: '0644'
         test_diff: true
         test_content: |
-          {{ _test_network_resolv }}
+          {{ ansible_facts['network__test_resolv'] }}
           # vm_network custom resolv.conf modification test.
 
-    - name: 'Verify | /etc/network/interfaces'
+    - name: 'Verify | test | /etc/network/interfaces'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
+        name: 'r_pufky.data.test'
         tasks_from: 'template.yml'
       vars:
-        test_name: 'Verify | /etc/network/interfaces'
+        test_name: 'Verify | test | /etc/network/interfaces'
         test_src: 'template.j2'
         test_file: '/etc/network/interfaces'
         test_owner: 'root'
@@ -58,37 +55,33 @@
           # This file describes the network interfaces available on your system
           # and how to activate them. For more information, see interfaces(5).
 
-          {{ _test_network_vagrant }}
+          {{ ansible_facts['network__test_vagrant'] }}
           source /etc/network/interfaces.d/*
 
-    - name: 'Verify | interfaces | /etc/network/interfaces.d/test_adapter'
+    - name: 'Verify | test | /etc/network/interfaces.d/test_adapter'
       ansible.builtin.include_role:
-        name: 'r_pufky.lib.tests'
+        name: 'r_pufky.data.test'
         tasks_from: 'copy.yml'
       vars:
-        test_name: >
-          Verify | interfaces |
-          /etc/network/interfaces.d/test_adapter
+        test_name: 'Verify | test | /etc/network/interfaces.d/test_adapter'
         test_src: 'test_adapter'
         test_file: '/etc/network/interfaces.d/test_adapter'
         test_owner: 'root'
         test_group: 'root'
         test_mode: '0644'
 
-    - name: 'Verify | interfaces | get IPv6 status'
+    - name: 'Verify | cmd | get IPv6 status'
       ansible.builtin.command: 'sysctl --values net.ipv6.conf.all.disable_ipv6'
-      register: _test_network_ipv6
+      register: network__test_ipv6
       changed_when: false
 
-    - name: 'Verify | interfaces | assert IPv6 enabled'
+    - name: 'Verify | assert | IPv6 enabled'
       ansible.builtin.assert:
         quiet: true
         that:
-          - _test_network_ipv6.stdout | int == 0
+          - network__test_ipv6.stdout | int == 0
         fail_msg: |
-          ╭───────────────────────────────────────────────────────────────────╮
-          │                                                                   │
-          │       sysctl should report net.ipv6.conf.all.disable_ipv6=0       │
-          │                                                                   │
-          ├───────────────────────────────────────────────────────────────────╯
-          │ {{ _test_network_ipv6.stdout }}
+
+          ✘ sysctl should report net.ipv6.conf.all.disable_ipv6=0
+
+          {{ network__test_ipv6.stdout }}

@@ -10,33 +10,31 @@
   gather_facts: false
   become: true
   tasks:
-    - name: 'Prepare | get /etc/resolv.conf'
+    - name: 'Prepare | filesystem | get /etc/resolv.conf'
       ansible.builtin.slurp:
         path: '/etc/resolv.conf'
-      register: _test_network_resolv_block
+      register: network__test_resolv_block
 
     # ansible only provides block writing not reading (blockinfile).
-    - name: 'Prepare | get /etc/network/interfaces vagrant-block'
-      ansible.builtin.command:  # noqa command-instead-of-module
+    - name: 'Prepare | cmd | get /etc/network/interfaces vagrant-block'
+      ansible.builtin.command:  # noqa command-instead-of-module multiline.
         argv:
           - 'sed'
           - '-n'
           - '/^#VAGRANT-BEGIN/,/^#VAGRANT-END/p'
           - '/etc/network/interfaces'
       changed_when: false
-      register: _test_network_vagrant_block
+      register: network__test_vagrant_block
 
-    - name: 'Prepare | cache vagrant node network configuration'
+    - name: 'Prepare | fact | cache vagrant node network configuration'
       ansible.builtin.set_fact:
-        _test_network_vagrant: '{{ _test_network_vagrant_block.stdout }}'
-        _test_network_resolv:
-          '{{ _test_network_resolv_block.content | b64decode }}'
+        network__test_vagrant: '{{ network__test_vagrant_block.stdout }}'
+        network__test_resolv:
+          '{{ network__test_resolv_block.content | b64decode }}'
         cacheable: true
 
     # ifreload only supports sources, not source-directory.
-    - name: >
-        Prepare |
-        set sources instead of source-directory (ifreload support)
+    - name: 'Prepare | filesystem | set /etc/network/interfaces'
       ansible.builtin.lineinfile:
         path: '/etc/network/interfaces'
         regexp: '^source-directory(.*)$'

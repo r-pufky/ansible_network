@@ -1,28 +1,38 @@
 ---
 ###############################################################################
-# Network Options
+# Feature Flags
 ###############################################################################
-# WARNING: for Proxmox/LXC containers, the network configuration **must** be
-# set in the LXC container configuration. Changing from DHCP (set in PVE) to
-# static (set in the LXC container) will cause network connection failures.
 
-# Is this role applied to a container?
+# 1. Is this role applied to a container?
 #
 # Decision: manual user setting - There is currently no good way to
 #     deterministically and consistently detect if a remote host is a
 #     container outside of common cases.
 #
 # Hosts marked as containers will automatically disable any sysctl changes:
-#   * network_tcp_bbr_enable
-#   * network_ipv6_enable
+#   * network_srv_tcp_bbr
+#   * network_srv_ipv6
 #
 # Special Case:
-#   * deb_container_enable=true forces network_container_enable=true.
+#   * deb_flg_container=true forces network_flg_container=true.
 #
 # Default: False.
-network_container_enable: false
+network_flg_container: false
 
-# Enable TCP BBR network algorithm if able.
+# 2. Enable FRR Configuration?
+#
+# FRR is a high performance network routing stack which adds support for
+# additional network routing protocols such as Openfabric. See: frr.yml.
+#
+# Default: False.
+# Enable FRR? Default: False.
+network_flg_frr: false
+
+###############################################################################
+# Service
+###############################################################################
+
+# Enable TCP BBR network algorithm if able?
 #
 # Uses sysctl (e.g. the kernel namespace must be available).
 #
@@ -30,14 +40,14 @@ network_container_enable: false
 #
 # Reference:
 # * https://github.com/google/bbr
-network_tcp_bbr_enable: true
+network_srv_tcp_bbr: true
 
 # Enable IPv4 Forwarding?
 #
 # Global IPv4 forwarding between all interfaces.
 #
 # Default: False.
-network_ipv4_forwarding_enable: false
+network_srv_ipv4_forwarding: false
 
 # Enable IPv6 support?
 #
@@ -50,14 +60,14 @@ network_ipv4_forwarding_enable: false
 #
 # Reference:
 # * https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=947234
-network_ipv6_enable: false
+network_srv_ipv6: false
 
 # Enable IPv6 Forwarding?
 #
 # Global IPv6 forwarding between all interfaces.
 #
 # Default: False.
-network_ipv6_forwarding_enable: false
+network_srv_ipv6_forwarding: false
 
 # Use 'systemctl restart networking'?
 #
@@ -68,19 +78,48 @@ network_ipv6_forwarding_enable: false
 # PVE should reboot instead of using this method.
 #
 # Default: False.
-network_systemctl_network_restart: false
+network_srv_systemctl_network_restart: false
+
+# Network Packages
+###############################################################################
+
+# Network packages to install. Default: [].
+network_srv_packages: []
+
+# Network packages to remove. Default: [].
+network_srv_packages_absent: []
+
+# Network apt sources to add.
+#
+# Additional APT sources for network installation. Configure in main APT
+# management if using main debian repositories (DEB822 will overwrite existing
+# APT sources based on signing keys, potentially removing configured APT
+# sources).
+#
+# Uses r_pufky.deb.apt.apt_sources format.
+#
+# Default: [] (unmanaged).
+network_srv_apt_sources: []
+
+###############################################################################
+# Config
+###############################################################################
+# WARNING: for Proxmox/LXC containers, the network configuration **must** be
+# set in the LXC container configuration. Changing from DHCP (set in PVE) to
+# static (set in the LXC container) will cause network connection failures.
+
 
 # Set /etc/resolv.conf.
 #
 # Set custom resolvers until other processes overwrite settings. Useful for
 # initial configurations. This file is dynamically updated on network changes
-# unless it is set immutable; see network_resolv_immutable.
+# unless it is set immutable; see network_cfg_resolv_immutable.
 #
 # Default: '' (un-managed).
 #
 # Reference:
 # * https://wiki.debian.org/resolv.conf
-network_resolv: ''
+network_cfg_resolv: ''
 
 # Set /etc/resolv.conf immutable?
 #
@@ -90,46 +129,45 @@ network_resolv: ''
 #
 # Reference:
 # * https://wiki.debian.org/resolv.conf
-network_resolv_immutable: false
+network_cfg_resolv_immutable: false
 
 # Network device definition using /etc/network/interfaces format.
 #
 # Proxmox must define all network interfaces here in order for the WebUI and
 # SDN to detect settings.
 #
-# Disable network_interfaces_source_enable, network_frr_interfaces_enable to
-# manually manage inclusion of interfaces.d and FRR service restarts.
+# Disable network_cfg_interfaces_source_enable, network_frr_interfaces_enable
+# to manually manage inclusion of interfaces.d and FRR service restarts.
 #
 # Default: '' (un-managed).
-network_interfaces: ''
+network_cfg_interfaces: ''
 
 # Enable automatic inclusion of interfaces.d?
 #
-# network_local must be configured if enabled as ifreload and post-up will fail
-# if interfaces.d is empty.
+# network_cfg_local must be configured if enabled as ifreload and post-up will
+# fail if interfaces.d is empty.
 #
 # Default: False.
-network_interfaces_source_enable: false
+network_cfg_interfaces_source_enable: false
 
-# Source interfaces.d before network_interfaces?
+# Source interfaces.d before network_cfg_interfaces?
 #
-# interfaces.d will be sourced after network_interfaces if False.
+# interfaces.d will be sourced after network_cfg_interfaces if False.
 #
 # Default: False.
-network_interfaces_source_before: false
+network_cfg_interfaces_source_before: false
 
-###############################################################################
-# Network (Local Configuration)
+# Local Config
 ###############################################################################
 # Configure network per interface (interfaces.d).
 #
 # Many advanced configurations expect to locate network configuration only in
-# network_interfaces. Generally this is expressed as the interface existing
+# network_cfg_interfaces. Generally this is expressed as the interface existing
 # (ls /sys/class/net, lshw -C network) but failing to come up or erroring as
 # 'not existing'. If using interfaces.d and there is wonky behavior, first try
-# moving the config to network_interfaces to resolve the issue.
+# moving the config to network_cfg_interfaces to resolve the issue.
 #
-# network_local:
+# network_cfg_local:
 #     list of dict - Network local configuration.
 #   - service: str - Name of local interface/service config
 #           (/etc/network/interfaces.d/{NAME}).
@@ -140,7 +178,7 @@ network_interfaces_source_before: false
 #         Default: 'present'.
 #     config: str - Network interface config.
 #
-# network_local:
+# network_cfg_local:
 #   - service: 'lo'
 #     state: 'present'
 #     config: |
@@ -154,4 +192,4 @@ network_interfaces_source_before: false
 #
 # Reference:
 # * https://manpages.debian.org/bookworm/ifupdown2/interfaces.5.en.html
-network_local: []
+network_cfg_local: []

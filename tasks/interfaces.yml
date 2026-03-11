@@ -21,26 +21,9 @@
 # * https://forum.proxmox.com/threads/how-to-edit-etc-network-interfaces-with-ansible-correctly.130972/
 # yamllint enable rule:line-length
 
-- name: 'Network | interfaces | assert interfaces defined for interfaces.d'
-  when: network_interfaces_source_enable
-  ansible.builtin.assert:
-    quiet: true
-    that:
-      - 'network_local | length > 0'
-    fail_msg: |
-      ╭───────────────────────────────────────────────────────────────────╮
-      │                                                                   │
-      │            network_local must have defined interfaces.            │
-      │                                                                   │
-      ├───────────────────────────────────────────────────────────────────╯
-      │ network_local must have defined interfaces if
-      │ network_interfaces_source_enable.
-      │
-      │ Otherwise ifreload and post-up will fail.
-
-- name: 'Network | interfaces | set'
-  when: network_interfaces | length > 0
-  notify: 'Handlers | reload restart networking'
+- name: 'Interfaces | filesystem | set /etc/network/interfaces'
+  when: network_cfg_interfaces | length > 0
+  notify: 'Handlers | ifreload networking'
   ansible.builtin.template:
     src: 'interfaces.j2'
     dest: '/etc/network/interfaces'

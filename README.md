@@ -1,35 +1,40 @@
 # Network
 Advanced network configuration management.
 
-## Requirements
-[supported platforms](https://github.com/r-pufky/ansible_network/blob/main/meta/main.yml)
+## [Requirements][i]
+Requires [r_pufky.deb][g] galaxy-ng collection.
 
 ## Role Variables
-[defaults](https://github.com/r-pufky/ansible_network/blob/main/defaults/main)
+Detailed variable use documented in defaults. See usage for role operation.
 
-## Dependencies
-**galaxy-ng** roles cannot be used independently. Part of
-[r_pufky.deb](https://github.com/r-pufky/ansible_collection_deb) collection.
+* [defaults][j] - User configurable options.
 
-## Example Playbook
-Apply network configuration to hosts.
+* [FRR][k] - FRR options.
+
+## Usage
+Proxmox/LXC containers network configuration must be set in LXC container
+configuration.
+
+### Example Playbooks
+
+#### Apply network configuration to a group of hosts.
 
 group_vars/all/vars/all.yml
 ``` yaml
 # enable for all hosts
-network_ipv6_enable: true
-network_tcp_bbr_enable: true
+network_srv_ipv6: true
+network_srv_tcp_bbr: true
 ```
 
-host_vars/example.com/network.yml
+host_vars/node1.example.com/network.yml
 ``` yaml
-network_resolv: |
+network_cfg_resolv: |
   search example.com
   nameserver 192.168.1.1
   # custom /etc/resolv.conf for host
-network_resolv_immutable: true
-network_interfaces_source_enable: true
-network_local:
+network_cfg_resolv_immutable: true
+network_cfg_interfaces_source_enable: true
+network_cfg_local:
   - service: 'lo'
     state: 'present'
     config: |
@@ -45,22 +50,20 @@ network_local:
     state: 'absent'
 ```
 
-Apply the base role
 ``` yaml
-- name: 'Apply base configuration'
+- name: 'Configure all nodes with IPv4 & TCP BBR; set interfaces for node1.'
   ansible.builtin.include_role:
     name: 'r_pufky.deb.network'
 ```
 
-## FRRouting is supported as well.
-FRR can be configured with interfaces simultaneously.
+#### FRR can be configured with interfaces simultaneously.
 
 ``` yaml
 - name: 'Add openfabric routing support'
   ansible.builtin.include_role:
     name: 'r_pufky.deb.network'
   vars:
-    network_frr_enable: true
+    network_flg_frr: true
     network_frr_interfaces_enable: true
     network_frr_daemon_fabricd_enable: true
     network_frr_config: |
@@ -91,20 +94,23 @@ FRR can be configured with interfaces simultaneously.
 ```
 
 ## Development
-Configure [environment](https://r-pufky.github.io/ansible_collection_docs/ansible/environment)
+Configure [environment][a].
 
-Run all unit tests:
 ``` bash
+# Run all tests.
 molecule test --all
 ```
 
-### Releases
-Major release versions track Debian release versions:
+### [Releases][b]
 
-* **[13.x.x](https://github.com/r-pufky/ansible_network)**: 13 Trixie.
-* **[12.x.x](https://github.com/r-pufky/ansible_network/tree/12.x)**: 12 Bookworm.
+  Release | Debian | Ansible | Notes
+ ---------|--------|---------|-------
+  3.x.x   | 13     | 2.20    | Ansible 2.20, semantic versioning.
+  2.x.x   | 13     | 2.18    | Migrate to Debian Trixie.
+  1.x.x   | 12     | 2.18    | Use standardized libraries.
+  0.x.x   | 12     | 2.18    | Migration from private repository.
 
-### Issues
+## Issues
 Create a bug and provide as much information as possible.
 
 Associate pull requests with a submitted bug.
@@ -116,3 +122,22 @@ Associate pull requests with a submitted bug.
 ## Author Information
 PGP Fingerprint: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9](https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9)
 | [github gist](https://gist.github.com/r-pufky/a8df36977c55b5bb20829267c4c49d22)
+
+## License
+[AGPL-3.0 License][c] | [direct link][f]
+
+## Author Information
+PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
+
+
+[a]: https://r-pufky.github.io/ansible_docs
+[b]: https://semver.org/spec/v2.0.0
+[c]: https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0
+[d]: https://keys.openpgp.org/vks/v1/by-fingerprint/466EEC2B67516C7117C85CE3A0BC35D16698BAB9
+[e]: https://gist.github.com/r-pufky/a8df36977c55b5bb20829267c4c49d22
+
+[f]: https://github.com/r-pufky/ansible_network/blob/main/LICENSE
+[g]: https://github.com/r-pufky/ansible_collection_deb
+[i]: https://github.com/r-pufky/ansible_network/blob/main/meta/main.yml
+[j]: https://github.com/r-pufky/ansible_network/tree/main/defaults/main/main.yml
+[k]: https://github.com/r-pufky/ansible_network/blob/main/defaults/main/frr.yml

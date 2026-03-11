@@ -10,7 +10,7 @@
 # yamllint enable rule:line-length
 
 - name: 'Network | FRR | set /etc/frr/daemons'
-  notify: 'Handlers | reload restart FRR'
+  notify: 'Handlers | ifreload FRR'
   ansible.builtin.template:
     src: 'frr/daemons.j2'
     dest: '/etc/frr/daemons'
@@ -20,7 +20,7 @@
     force: true
 
 - name: 'Network | FRR | set /etc/frr/frr.conf'
-  notify: 'Handlers | reload restart FRR'
+  notify: 'Handlers | ifreload FRR'
   ansible.builtin.template:
     src: 'frr/frr.conf.j2'
     dest: '/etc/frr/frr.conf'

@@ -1,0 +1,38 @@
+---
+###############################################################################
+# Prep
+###############################################################################
+
+- name:
+    'Prep | fact | force network_flg_container=true (deb_flg_container)'
+  when: deb_flg_container | default(false)
+  ansible.builtin.set_fact:
+    network_flg_container: true
+
+- name: 'Prep | assert | interfaces defined for interfaces.d'
+  when: network_cfg_interfaces_source_enable
+  ansible.builtin.assert:
+    quiet: true
+    that:
+      - 'network_cfg_local | length > 0'
+    fail_msg: |
+
+      ✘ network_cfg_local must have defined interfaces.
+
+      network_cfg_local must have defined interfaces if
+      network_cfg_interfaces_source_enable.
+
+      Otherwise ifreload and post-up will fail.
+
+- name: 'Prep | packages'
+  ansible.builtin.include_role:
+    name: 'r_pufky.deb.apt'
+  vars:
+    apt_packages:
+      - '{{ network___packages }}'
+      - '{{ network_srv_packages }}'
+      - '{{ network___frr_packages if network_flg_frr else [] }}'
+    apt_packages_absent:
+      - '{{ network_srv_packages_absent }}'
+    apt_sources: '{{ network_srv_apt_sources }}'
+    apt_srv_package_update_cache: true

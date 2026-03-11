@@ -4,7 +4,7 @@
   gather_facts: false
   become: true
   tasks:
-    - name: 'Prepare | get /etc/resolv.conf'
+    - name: 'Prepare | filesystem | backup /etc/resolv.conf'
       ansible.builtin.copy:
         src: '/etc/resolv.conf'
         remote_src: true
@@ -13,7 +13,7 @@
         group: 'root'
         mode: '0644'
 
-    - name: 'Prepare | get /etc/network/interfaces'
+    - name: 'Prepare | filesystem | backup /etc/network/interfaces'
       ansible.builtin.copy:
         src: '/etc/network/interfaces'
         remote_src: true

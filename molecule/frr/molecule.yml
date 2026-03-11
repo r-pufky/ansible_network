@@ -14,25 +14,24 @@ dependency:
 driver:
   name: 'vagrant'
   provider:
-    name: 'virtualbox'
-    config_options:
-      ssh.keep_alive: true
-      ssh.remote_user: 'root'
-    options:
-      append_platform_to_hostname: false
+    name: 'libvirt'
+    type: 'libvirt'
 provisioner:
   name: 'ansible'
+  connection_options:
+    ansible_ssh_user: 'vagrant'
+    ansible_become: true
   config_options:
     defaults:
       interpreter_python: 'auto_silent'
       callback_whitelist: 'profile_tasks, timer, yaml'
-      fact_caching: 'jsonfile'  # cache vagrant VM network configuration
+      fact_caching: 'jsonfile'  # cache vagrant VM network configuration.
       fact_caching_connection: '/tmp/facts_cache'
       fact_caching_timeout: 7200
   inventory:
     group_vars:
       all:
-        network_frr_enable: true
+        network_flg_frr: true
         network_frr_config: |
          frr defaults traditional
          hostname test_frr_host
@@ -59,67 +58,58 @@ provisioner:
           max-lsp-lifetime 600
           lsp-refresh-interval 180
     host_vars:
-      network-debian-13-vm-frr-disable-management:
-        network_interfaces_source_enable: false
+      network-frr-disable-mgmt:
+        network_cfg_interfaces_source_enable: false
         network_frr_interfaces_enable: false
         network_frr_config: 'log syslog informational'
-      network-debian-13-vm-frr-enable-with-sources:
-        network_interfaces_source_enable: true
+      network-frr-enable-src:
+        network_cfg_interfaces_source_enable: true
         network_frr_interfaces_enable: true
         network_frr_daemon_fabricd_enable: true
-        network_local:
+        network_cfg_local:
           - service: 'test_adapter'
             state: 'present'
             config: |
               # allow-hotplug enp15s0f10
               # iface enp15s0f10 inet manual
               # test network adapter loaded from interfaces.d
-      network-debian-13-vm-frr-enable-no-sources:
-        network_interfaces_source_enable: false
+      network-frr-enable-nosrc:
+        network_cfg_interfaces_source_enable: false
         network_frr_interfaces_enable: true
         network_frr_daemon_fabricd_enable: true
 platforms:
   - name: 'network-frr-disable-mgmt'
-    box: 'inception-of-things/debian-trixie'
+    box: 'debian/trixie64'
     memory: 4096
     cpus: 2
     interfaces:
-      - network_name: private_network  # network_name required
+      - network_name: 'private_network'
         auto_config: true
         type: 'dhcp'
   - name: 'network-frr-enable-src'
-    box: 'inception-of-things/debian-trixie'
+    box: 'debian/trixie64'
     memory: 4096
     cpus: 2
     interfaces:
-      - network_name: private_network  # network_name required
+      - network_name: 'private_network'
         auto_config: true
         type: 'dhcp'
   - name: 'network-frr-enable-nosrc'
-    box: 'inception-of-things/debian-trixie'
+    box: 'debian/trixie64'
     memory: 4096
     cpus: 2
     interfaces:
-      - network_name: private_network  # network_name required
+      - network_name: 'private_network'
         auto_config: true
         type: 'dhcp'
 verifier:
   name: 'ansible'
-lint: |
-  set -e
-  yamllint .
-  ansible-lint .
 scenario:
   test_sequence:
-    # - 'dependency'
-    # - 'cleanup'
     - 'destroy'
     - 'syntax'
     - 'create'
     - 'prepare'
     - 'converge'
-    # - 'idempotence'  # setting immutable can only be done once.
-    # - 'side_effect'
     - 'verify'
-    # - 'cleanup'
     - 'destroy'

@@ -5,32 +5,29 @@
 # Inject vagrant network blocks.
 #
 # Args:
-#   _test_network_vagrant: str - vagrant network block.
-#   _test_network_resolv: str - resolv.conf block.
+#   network__test_vagrant: str - vagrant network block.
+#   network__test_resolv: str - resolv.conf block.
 
 - name: 'Converge'
   hosts: 'all'
   gather_facts: false
   become: true
   tasks:
-    - name: 'Converge | assert fact_caching not expired'
+    - name: 'Converge | assert | fact_caching not expired'
       ansible.builtin.assert:
         quiet: true
         that:
-          - '_test_network_resolv is defined'
-          - '_test_network_vagrant is defined'
+          - ansible_facts['network__test_resolv'] is defined
+          - ansible_facts['network__test_vagrant'] is defined
         fail_msg: |
-          ╭───────────────────────────────────────────────────────────────────╮
-          │                                                                   │
-          │             fact_caching has expired; re-run prepare.             │
-          │                                                                   │
-          ╰───────────────────────────────────────────────────────────────────╯
 
-    - name: 'Converge | run r_pufky.deb.network'
+          ✘ fact_caching has expired; re-run prepare.
+
+    - name: 'Converge | role | r_pufky.deb.network'
       ansible.builtin.include_role:
         name: 'r_pufky.deb.network'
       vars:
-        network_resolv: |
-          {{ _test_network_resolv }}
+        network_cfg_resolv: |
+          {{ ansible_facts['network__test_resolv'] }}
           # vm_network custom resolv.conf modification test.
-        network_interfaces: '{{ _test_network_vagrant }}'
+        network_cfg_interfaces: '{{ ansible_facts["network__test_vagrant"] }}'
