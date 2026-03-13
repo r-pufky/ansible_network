@@ -15,6 +15,14 @@ Detailed variable use documented in defaults. See usage for role operation.
 Proxmox/LXC containers network configuration must be set in LXC container
 configuration.
 
+### Feature Flags
+Tasks are gated by feature flags and executed in the following order.
+
+  Step | Flag                  | Notes
+ ------|-----------------------|-------
+  1    | network_flg_container | Deploy container specific network settings.
+  2    | network_flg_frr       | Install FRR.
+
 ### Example Playbooks
 
 #### Apply network configuration to a group of hosts.

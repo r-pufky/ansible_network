@@ -14,13 +14,13 @@
 - name: 'Handlers | networking'
   listen: 'Handlers | ifreload networking'
   when: network_srv_systemctl_network_restart
-  ansible.builtin.service:
+  ansible.builtin.systemd:
     name: 'networking'
     state: 'restarted'
   changed_when: true
 
 - name: 'Handlers | FRR'
   listen: 'Handlers | ifreload FRR'
-  ansible.builtin.service:
+  ansible.builtin.systemd:
     name: 'frr'
     state: 'restarted'
