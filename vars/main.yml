@@ -5,7 +5,7 @@
 
 network___release: "{{ {} | r_pufky.data.v3(
 
-    _date='2025-08-23',
+    _date='2026-03-11',
     _debian='trixie',
     _frr='10.4.1',
   ) }}"
