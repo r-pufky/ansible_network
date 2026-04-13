@@ -1,7 +1,14 @@
 ---
+# yamllint disable rule:line-length
 ###############################################################################
-# Prep
+# Pre Execution Tasks
 ###############################################################################
+# In certain cases the ifupdown2 package does not create the required /etc
+# directory during initialization. Manually ensure this directory exists for
+# interface state changes to succeed.
+#
+# Reference:
+# * https://forum.proxmox.com/threads/ifreload-a-failed-exit-code-1-when-applying-config-in-networking-solved.141676
 
 - name:
     'Prep | fact | force network_flg_container=true (deb_flg_container)'
@@ -36,3 +43,11 @@
       - '{{ network_srv_packages_absent }}'
     apt_sources: '{{ network_srv_apt_sources }}'
     apt_srv_package_update_cache: true
+
+- name: '{{ "Prep | filesystem | set " ~ network___app._rt_tables_d }}'
+  ansible.builtin.file:
+    path: '{{ network___app._rt_tables_d }}'
+    owner: 'root'
+    group: 'root'
+    mode: '0755'
+    state: 'directory'
