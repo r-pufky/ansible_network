@@ -137,7 +137,6 @@ PGP Fingerprint: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9](https://keys.openpgp
 ## Author Information
 PGP: [466EEC2B67516C7117C85CE3A0BC35D16698BAB9][d] | [github gist][e]
 
-
 [a]: https://r-pufky.github.io/ansible_docs
 [b]: https://semver.org/spec/v2.0.0
 [c]: https://www.tldrlegal.com/license/gnu-affero-general-public-license-v3-agpl-3-0
