@@ -31,6 +31,7 @@ provisioner:
   inventory:
     group_vars:
       all:
+        apt_srv_auto_grub_boot: true  # Testing VM only.
         network_flg_frr: true
         network_frr_config: |
          frr defaults traditional

@@ -31,6 +31,7 @@ provisioner:
   inventory:
     group_vars:
       all:
+        apt_srv_auto_grub_boot: true  # Testing VM only.
         network_srv_ipv6: true
         network_cfg_interfaces_source_enable: true
         network_cfg_local:
